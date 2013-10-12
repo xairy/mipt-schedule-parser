@@ -23,5 +23,11 @@ def weekday_range(worksheet, weekday):
     assert ranges[i] == ranges[i + 1]
   return ranges[0]
 
+def department_count(worksheet):
+  return 0
+
+def department_range(worksheet):
+  return (0, 0)
+
 if __name__ == '__main__':
   print 'MONDAY: ' + str(weekday_range(worksheet, MONDAY))
