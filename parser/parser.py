@@ -13,6 +13,9 @@ THURSDAY = u'Четверг'
 FRIDAY = u'Пятница'
 SATURDAY = u'Суббота'
 
+DAYS = u'Дни'
+HOURS = u'Часы'
+
 def weekday_range(worksheet, weekday):
   ranges = []
   for (rb, re, cb, ce) in worksheet.merged_cells:
@@ -24,10 +27,33 @@ def weekday_range(worksheet, weekday):
   return ranges[0]
 
 def department_count(worksheet):
-  return 0
+  days = 0
+  hours = 0
+  for row in xrange(worksheet.nrows):
+    for col in xrange(worksheet.ncols):
+      if worksheet.cell_value(row, col) == DAYS:
+        days += 1
+      if worksheet.cell_value(row, col) == HOURS:
+        hours += 1
+  assert days == hours
+  return days
 
-def department_range(worksheet):
-  return (0, 0)
+def department_range(worksheet, index):
+  days = []
+  hours = []
+  for row in xrange(worksheet.nrows):
+    for col in xrange(worksheet.ncols):
+      if worksheet.cell_value(row, col) == DAYS:
+        days.append(col)
+      if worksheet.cell_value(row, col) == HOURS:
+        hours.append(col)
+  days.sort()
+  hours.sort()
+  assert len(days) == len(hours)
+  assert index < len(days)
+  beg = hours[index] + 1
+  end = days[index + 1] if (index + 1 < len(days)) else worksheet.ncols
+  return (beg, end)
 
 if __name__ == '__main__':
   print 'MONDAY: ' + str(weekday_range(worksheet, MONDAY))
