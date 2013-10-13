@@ -55,5 +55,13 @@ def department_range(worksheet, index):
   end = days[index + 1] if (index + 1 < len(days)) else worksheet.ncols
   return (beg, end)
 
-if __name__ == '__main__':
-  print 'MONDAY: ' + str(weekday_range(worksheet, MONDAY))
+def group_count(worksheet, department):
+  return 0
+
+def group_range(worksheet, department, group):
+  return (0, 0)
+
+def group_list(worksheet, department):
+  dep_range = department_range(worksheet, department)
+  ranges = []
+  return []

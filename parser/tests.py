@@ -36,5 +36,47 @@ class DepartmentRangeTest(unittest.TestCase):
     self.assertEqual(parser.department_range(self.worksheet, 7), (64, 71))
     self.assertEqual(parser.department_range(self.worksheet, 8), (73, 77))
 
+class GroupCountTest(unittest.TestCase):
+  def setUp(self):
+    self.workbook = xlrd.open_workbook('2013_fall/4kurs.xls', formatting_info=True)
+    self.worksheet = self.workbook.sheet_by_index(0)
+
+  def runTest(self):
+    self.assertEqual(parser.group_count(self.worksheet, 0), 9)
+    self.assertEqual(parser.group_count(self.worksheet, 1), 7)
+    self.assertEqual(parser.group_count(self.worksheet, 2), 8)
+    self.assertEqual(parser.group_count(self.worksheet, 3), 2)
+    self.assertEqual(parser.group_count(self.worksheet, 4), 5)
+    self.assertEqual(parser.group_count(self.worksheet, 5), 8)
+    self.assertEqual(parser.group_count(self.worksheet, 6), 7)
+    self.assertEqual(parser.group_count(self.worksheet, 7), 7)
+    self.assertEqual(parser.group_count(self.worksheet, 8), 4)
+
+class GroupRangeTest(unittest.TestCase):
+  def setUp(self):
+    self.workbook = xlrd.open_workbook('2013_fall/4kurs.xls', formatting_info=True)
+    self.worksheet = self.workbook.sheet_by_index(0)
+
+  def runTest(self):
+    self.assertEqual(parser.group_range(self.worksheet, 0, 0), (2, 3))
+    self.assertEqual(parser.group_range(self.worksheet, 0, 1), (3, 4))
+    self.assertEqual(parser.group_range(self.worksheet, 2, 1), (23, 25))
+    self.assertEqual(parser.group_range(self.worksheet, 2, 2), (25, 26))
+    self.assertEqual(parser.group_range(self.worksheet, 2, 3), (27, 29))
+    self.assertEqual(parser.group_range(self.worksheet, 5, 3), (48, 49))
+    self.assertEqual(parser.group_range(self.worksheet, 8, 0), (73, 74))
+    self.assertEqual(parser.group_range(self.worksheet, 8, 3), (76, 77))
+
+class GroupListTest(unittest.TestCase):
+  def setUp(self):
+    self.workbook = xlrd.open_workbook('2013_fall/4kurs.xls', formatting_info=True)
+    self.worksheet = self.workbook.sheet_by_index(0)
+
+  def runTest(self):
+    self.assertEqual(parser.group_list(self.worksheet, 0), ['011', '012', '013', '014', '015', '016', '017', '018', '019'])
+    self.assertEqual(parser.group_list(self.worksheet, 1), ['021', '022', '023', '024', '025', '026', '028'])
+    self.assertEqual(parser.group_list(self.worksheet, 4), ['041', '042'])
+    self.assertEqual(parser.group_list(self.worksheet, 8), ['0111', '0112', '0113', '0114'])
+
 if __name__ == '__main__':
    unittest.main()
