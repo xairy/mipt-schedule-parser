@@ -25,10 +25,10 @@ def DotCapitalJoin(list):
   return result
 
 buildings = [u'ГК', u'ЛК', u'НК', u'КПМ', u'РТК']
-bh = DotCapitalJoin([u'б', u'хим'])
-bf = DotCapitalJoin([u'б', u'физ'])
-gf = DotCapitalJoin([u'гл', u'физ'])
-az = DotCapitalJoin([u'акт', u'зал'])
+bh = [u'Б. Хим.'] + DotCapitalJoin([u'б', u'хим'])
+bf = [u'Б. Физ.'] + DotCapitalJoin([u'б', u'физ'])
+gf = [u'Гл. Физ.'] + DotCapitalJoin([u'гл', u'физ'])
+az = [u'Акт. Зал'] + DotCapitalJoin([u'акт', u'зал'])
 lecture_rooms = bh + bf + gf + az
 
 first_teacher_re = regex.compile(
@@ -124,6 +124,14 @@ def GetLocations(value):
     if m == None:
       break
     room = m.group(u'room')
+    if room in bh:
+      room = bh[0]
+    if room in bf:
+      room = bf[0]
+    if room in gf:
+      room = gf[0]
+    if room in az:
+      room = az[0]
     locations.append((room, None))
     value = value[:m.start(u'location')] + value[m.end(u'location'):]
   return locations
