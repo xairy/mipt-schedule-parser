@@ -1,76 +1,74 @@
 #!/usr/bin/python
 #coding: utf-8
 
-import math
+from __future__ import unicode_literals
+
 import regex
 import sets
 import sys
 import xlrd
 
-#TODO: import from future.
-#TODO: 'Б. Хим' -> 'Б. Хим.' etc.
-
 def DotCapitalJoin(list):
   if list == []:
-    return [u'']
+    return ['']
   result = []
   tail = DotCapitalJoin(list[1:])
   head_lower = list[0]
   head_upper = list[0][0].upper() + list[0][1:]
   for elem in tail:
-    result.append((head_upper + u'. ' + elem).rstrip())
-    result.append((head_upper + u' ' + elem).rstrip())
-    result.append((head_lower + u'. ' + elem).rstrip())
-    result.append((head_lower + u' ' + elem).rstrip())
+    result.append((head_upper + '. ' + elem).rstrip())
+    result.append((head_upper + ' ' + elem).rstrip())
+    result.append((head_lower + '. ' + elem).rstrip())
+    result.append((head_lower + ' ' + elem).rstrip())
   return result
 
-buildings = [u'ГК', u'ЛК', u'НК', u'КПМ', u'РТК']
-bh = [u'Б. Хим.'] + DotCapitalJoin([u'б', u'хим'])
-bf = [u'Б. Физ.'] + DotCapitalJoin([u'б', u'физ'])
-gf = [u'Гл. Физ.'] + DotCapitalJoin([u'гл', u'физ'])
-az = [u'Акт. Зал'] + DotCapitalJoin([u'акт', u'зал'])
+buildings = ['ГК', 'ЛК', 'НК', 'КПМ', 'РТК']
+bh = ['Б. Хим.'] + DotCapitalJoin(['б', 'хим'])
+bf = ['Б. Физ.'] + DotCapitalJoin(['б', 'физ'])
+gf = ['Гл. Физ.'] + DotCapitalJoin(['гл', 'физ'])
+az = ['Акт. Зал'] + DotCapitalJoin(['акт', 'зал'])
 lecture_rooms = bh + bf + gf + az
 
 first_teacher_re = regex.compile(
-  u'(?P<teacher>' + \
-    u'(?P<surname>[А-ЯЁ][а-яА-ЯёЁ-]+)' + ' ' + \
-    u'(?P<first_initial>[А-ЯЁ])\.?' + ' ' + \
-    u'(?P<second_initial>[А-ЯЁ])\.?' + \
-  u')' + \
-  u'(?:[^а-яА-ЯёЁ]|$)'
+  '(?P<teacher>' + \
+    '(?P<surname>[А-ЯЁ][а-яА-ЯёЁ-]+)' + ' ' + \
+    '(?P<first_initial>[А-ЯЁ])\.?' + ' ' + \
+    '(?P<second_initial>[А-ЯЁ])\.?' + \
+  ')' + \
+  '(?:[^а-яА-ЯёЁ]|$)'
 )
 
 second_teacher_re = regex.compile(
-  u'/(?P<teacher>' + \
-    u'(?:[^/]*? |)' + \
-    u'(?P<surname>[А-ЯЁ][а-яА-ЯёЁ-]+)' + \
-    u'(?:' + ' ' + \
-      u'(?P<first_initial>[А-Я])\.?' + ' ' + \
-      u'(?P<second_initial>[А-Я])\.?' + \
-    u')?' + ' ?' + \
-  u')/'
+  '/(?P<teacher>' + \
+    '(?:[^/]*? |)' + \
+    '(?P<surname>[А-ЯЁ][а-яА-ЯёЁ-]+)' + \
+    '(?:' + ' ' + \
+      '(?P<first_initial>[А-Я])\.?' + ' ' + \
+      '(?P<second_initial>[А-Я])\.?' + \
+    ')?' + ' ?' + \
+  ')/'
 )
 
 first_location_re = regex.compile(
-  u'(?P<location>' + \
-    u'(?P<room>[0-9]+а?)' + u' ?' + \
-    u'(?P<building>' + u'|'.join(buildings) + u')' + \
-  u')' + \
-  u'(?:[^а-яА-ЯёЁ]|$)'
+  '(?P<location>' + \
+    '(?P<room>[0-9]+а?)' + ' ?' + \
+    '(?P<building>' + '|'.join(buildings) + ')' + \
+  ')' + \
+  '(?:[^а-яА-ЯёЁ]|$)'
 )
 
 second_location_re = regex.compile(
-  u'(?P<location>' + \
-    u'(?P<room>' + u'|'.join(lecture_rooms) + u')' + \
-  u')' + \
-  u'(?:[^а-яА-ЯёЁ]|$)'
+  '(?P<location>' + \
+    '(?P<room>' + '|'.join(lecture_rooms) + ')' + \
+  ')' + \
+  '(?:[^а-яА-ЯёЁ]|$)'
 )
 
 # Removes consecutive whitespaces, adds a space after each dot,
 # makes the first letter of a word after a dot capital.
 def Normalize(string):
-  string = string.replace(u'.', u'. ')
-  string = u' '.join(string.split())
+  string = string.replace('.', '. ')
+  string = ' '.join(string.split())
   return string
 
 def GetValues(file):
@@ -93,18 +91,18 @@ def GetTeachers(value):
     m = first_teacher_re.search(value)
     if m == None:
       break
-    surname = m.group(u'surname')
-    first_initial = m.group(u'first_initial')
-    second_initial = m.group(u'second_initial')
+    surname = m.group('surname')
+    first_initial = m.group('first_initial')
+    second_initial = m.group('second_initial')
     if len(surname) >= 3:
       teachers.append((surname, first_initial, second_initial))
-    value = value[:m.start(u'teacher')] + value[m.end(u'teacher'):]
+    value = value[:m.start('teacher')] + value[m.end('teacher'):]
   if len(teachers) == 0:
     m = second_teacher_re.search(value)
     if m != None:
-      surname = m.group(u'surname')
-      first_initial = m.group(u'first_initial')
-      second_initial = m.group(u'second_initial')
+      surname = m.group('surname')
+      first_initial = m.group('first_initial')
+      second_initial = m.group('second_initial')
       if len(surname) >= 3:
         teachers.append((surname, first_initial, second_initial))
   return teachers
@@ -115,15 +113,15 @@ def GetLocations(value):
     m = first_location_re.search(value)
     if m == None:
       break
-    room = m.group(u'room')
-    building = m.group(u'building')
+    room = m.group('room')
+    building = m.group('building')
     locations.append((room, building))
-    value = value[:m.start(u'location')] + value[m.end(u'location'):]
+    value = value[:m.start('location')] + value[m.end('location'):]
   while True:
     m = second_location_re.search(value)
     if m == None:
       break
-    room = m.group(u'room')
+    room = m.group('room')
     if room in bh:
       room = bh[0]
     if room in bf:
@@ -133,7 +131,7 @@ def GetLocations(value):
     if room in az:
       room = az[0]
     locations.append((room, None))
-    value = value[:m.start(u'location')] + value[m.end(u'location'):]
+    value = value[:m.start('location')] + value[m.end('location'):]
   return locations
 
 if __name__ == '__main__':
@@ -152,19 +150,19 @@ if __name__ == '__main__':
     teachers = GetTeachers(value)
     print value.encode('utf-8')
     for location in locations:
-      print u'<l'.encode('utf-8'),
+      print '<l'.encode('utf-8'),
       if location[0] != None:
         print location[0].encode('utf-8'),
       if location[1] != None:
         print location[1].encode('utf-8'),
-      print u'>'.encode('utf-8')
+      print '>'.encode('utf-8')
     for teacher in teachers:
-      print u'<t'.encode('utf-8'),
+      print '<t'.encode('utf-8'),
       if teacher[0] != None:
         print teacher[0].encode('utf-8'),
       if teacher[1] != None:
         print teacher[1].encode('utf-8'),
       if teacher[2] != None:
         print teacher[2].encode('utf-8'),
-      print u'>'.encode('utf-8')
+      print '>'.encode('utf-8')
     print
