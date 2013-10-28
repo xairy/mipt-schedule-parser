@@ -1,6 +1,8 @@
 #!/usr/bin/python
 #coding: utf-8
 
+from __future__ import unicode_literals
+
 import unittest
 import xlrd
 
@@ -50,6 +52,24 @@ class DepartmentsRowTest(unittest.TestCase):
 
   def runTest(self):
     self.assertEqual(self.schedule.GetDepartmentsRow(), 3)
+
+class HoursColumnTest(unittest.TestCase):
+  def setUp(self):
+    self.schedule = parser.Schedule()
+    self.schedule.Parse('2013_fall/4kurs.xls')
+
+  def runTest(self):
+    self.assertEqual(self.schedule.GetHoursColumn(), 1)
+
+class HoursRangesTest(unittest.TestCase):
+  def setUp(self):
+    self.schedule = parser.Schedule()
+    self.schedule.Parse('2013_fall/4kurs.xls')
+
+  def runTest(self):
+    self.assertEqual(self.schedule.GetHoursRanges(0), [(4, 5), (5, 6), (6, 7), (7, 8), (8, 9), (9, 10), (10, 11)])
+    self.assertEqual(self.schedule.GetHoursRanges(3), [(28, 30), (30, 31), (31, 32), (32, 34), (34, 35), (35, 36), (36, 37)])
+    self.assertEqual(self.schedule.GetHoursRanges(5), [(48, 49), (49, 50), (50, 52), (52, 53), (53, 54), (54, 56), (56, 57)])
 
 class GroupCountTest(unittest.TestCase):
   def setUp(self):
