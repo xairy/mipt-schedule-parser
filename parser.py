@@ -1,20 +1,22 @@
 #!/usr/bin/python
 #coding: utf-8
 
+from __future__ import unicode_literals
+
 import sys
 import xlrd
 
-#TODO: check time schedule.
+DAYS = 'Дни'
+HOURS = 'Часы'
 
-MONDAY = u'Понедельник'
-TUESDAY = u'Вторник'
-WEDNESDAY = u'Среда'
-THURSDAY = u'Четверг'
-FRIDAY = u'Пятница'
-SATURDAY = u'Суббота'
+MONDAY = 'Понедельник'
+TUESDAY = 'Вторник'
+WEDNESDAY = 'Среда'
+THURSDAY = 'Четверг'
+FRIDAY = 'Пятница'
+SATURDAY = 'Суббота'
 
-DAYS = u'Дни'
-HOURS = u'Часы'
+WEEKDAYS = [MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY]
 
 class Schedule:
   def __init__(self):
@@ -26,12 +28,12 @@ class Schedule:
 
     self.ParseWeekdays()
     self.ParseDepartments()
+    self.ParseHours()
     self.ParseGroups()
 
   def ParseWeekdays(self):
     self.weekday_ranges = []
-    weekdays = [MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY]
-    for day in weekdays:
+    for day in WEEKDAYS:
       ranges = []
       for (rb, re, cb, ce) in self.worksheet.merged_cells:
         if self.worksheet.cell_value(rb, cb) == day:
@@ -63,6 +65,20 @@ class Schedule:
     for k in xrange(len(rows) - 1):
       assert rows[k] == rows[k + 1]
     self.departments_row = rows[0]
+    self.hours_column = hours_cols[0]
+
+  def ParseHours(self):
+    self.hours_ranges = []
+    for weekday_range in self.weekday_ranges:
+      weekday_hours_ranges = []
+      last = weekday_range[0]
+      for row in xrange(weekday_range[0] + 1, weekday_range[1]):
+        value = self.worksheet.cell_value(row, self.hours_column)
+        if value != '':
+          weekday_hours_ranges.append((last, row))
+          last = row
+      weekday_hours_ranges.append((last, weekday_range[1]))
+      self.hours_ranges.append(weekday_hours_ranges) 
 
   def ParseGroups(self):
     self.groups = []
@@ -74,7 +90,7 @@ class Schedule:
       dep_row = self.departments_row
       for column in xrange(dep_range[0], dep_range[1]):
         beg, end = 0, 0
-        group = self.worksheet.cell_value(dep_row, column).encode('ascii')
+        group = self.worksheet.cell_value(dep_row, column)
         if group != '':
           dep_groups.append(group)
           beg, end = column, column + 1
@@ -95,6 +111,12 @@ class Schedule:
 
   def GetDepartmentsRow(self):
     return self.departments_row
+
+  def GetHoursColumn(self):
+    return self.hours_column
+
+  def GetHoursRanges(self, weekday_index):
+    return self.hours_ranges[weekday_index]
 
   def GetGroupCount(self, department_index):
     return len(self.groups[department_index])
