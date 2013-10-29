@@ -5,11 +5,14 @@ from __future__ import unicode_literals
 
 import regex
 import sets
+import string
 import sys
+import unicodedata
 import xlrd
 
 #TODO: четные недели
 #TODO: альтернативныe курс.
+#TODO: 'МСС-Доц. Извеков-430 ГК, Доцент Березникова М. В. . -211 ГК; Проф. Рыжак Е. И. - 532 ГК'
 
 # ['ii', 'ee'] -> ['ii ee', 'ii ee.', 'ii. ee', 'ii. ee.',
 #                  'Ii ee', 'Ii ee.', 'Ii. ee', 'Ii. ee.',
@@ -30,13 +33,13 @@ def DotCapitalJoin(list):
   return result
 
 # 'ieg' -> ['ieg', 'Ieg', 'iEg', 'IEg', 'ieG', 'IeG', 'iEG', 'IEG']
-def CapitalVary(string):
-  if string == '':
+def CapitalVary(s):
+  if s == '':
     return ['']
   result = []
-  head_lower = string[0].lower()
-  head_upper = string[0].upper()
-  tail_list = CapitalVary(string[1:])
+  head_lower = s[0].lower()
+  head_upper = s[0].upper()
+  tail_list = CapitalVary(s[1:])
   for elem in tail_list:
     result.append(head_lower + elem)
     result.append(head_upper + elem)
@@ -93,12 +96,40 @@ lecture_room_re = regex.compile(
   '(?:[^а-яА-ЯёЁ]|$)'
 )
 
-# Removes consecutive whitespaces, adds a space after each dot,
-# makes the first letter of a word after a dot capital.
-def Normalize(string):
-  string = string.replace('.', '. ')
-  string = ' '.join(string.split())
-  return string
+subject_res = []
+subject_names = [[]]
+with open('subjects') as subject_file:
+  while True:
+    line = subject_file.readline().decode('utf-8')
+    if line == '':
+      break;
+    line = line.rstrip()
+    if len(line) > 0:
+      subject_names[-1].append(line)
+    else:
+      assert len(subject_names[-1]) > 0
+      subject_re = regex.compile( \
+        '(?P<subject>' + '|'.join(subject_names[-1]) + ')' \
+      )
+      subject_res.append(subject_re)
+      subject_names.append([])
+
+# Removes consecutive whitespaces, adds a space after each dot.
+def Simplify(s):
+  s = s.replace('.', '. ')
+  s = ' '.join(s.split())
+  return s
+
+unicode_punctuation_dict = dict((i, ' ') for i in xrange(sys.maxunicode)
+                                if unicodedata.category(unichr(i)).startswith('P'))
+
+# Does what Simplify() does, removes all punctuation and lowers case.
+def Normalize(s):
+  s = s.replace('.', '. ')
+  s = s.translate(unicode_punctuation_dict)
+  s = s.lower()
+  s = ' '.join(s.split())
+  return s
 
 def GetValues(file):
   workbook = xlrd.open_workbook(file, formatting_info=True)
@@ -115,6 +146,7 @@ def GetValues(file):
   return values
 
 def GetTeachers(value):
+  value = Simplify(value)
   teachers = []
   while True:
     m = first_teacher_re.search(value)
@@ -138,6 +170,7 @@ def GetTeachers(value):
   return teachers
 
 def GetLocations(value):
+  value = Simplify(value)
   locations = []
   while True:
     m = building_room_re.search(value)
@@ -180,6 +213,20 @@ def GetLocations(value):
     value = value[:m.start('location')] + value[m.end('location'):]
   return locations
 
+def GetSubjects(value):
+  value = Normalize(value)
+  subjects = []
+  for i in xrange(len(subject_res)):
+    subject_re = subject_res[i]
+    subject_name = subject_names[i][0]
+    m = subject_re.search(value)
+    if m == None:
+      continue
+    subject = m.group('subject')
+    subjects.append(subject_name)
+    value = value[:m.start('subject')] + value[m.end('subject'):]
+  return subjects
+
 if __name__ == '__main__':
   values = \
     GetValues('2013_fall/1kurs.xls').union( \
@@ -190,11 +237,13 @@ if __name__ == '__main__':
     GetValues('2013_fall/6kurs.xls') \
   )
 
-  for value in values0:
-    value = Normalize(value)
+  for value in values:
     locations = GetLocations(value)
     teachers = GetTeachers(value)
+    subjects = GetSubjects(value)
     print value.encode('utf-8')
+    for subject in subjects:
+      print ('<s ' + subject + ' >').encode('utf-8')
     for location in locations:
       print '<l'.encode('utf-8'),
       if location[0] != None:
