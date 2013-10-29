@@ -127,8 +127,6 @@ class TeachersTest(unittest.TestCase):
         [] \
       ) \
     ]
-    self.answers = [ \
-    ]
   def runTest(self):
     for i in xrange(len(self.cases)):
       self.assertEqual(cell_parser.GetTeachers(self.cases[i][0]), self.cases[i][1])
@@ -186,8 +184,6 @@ class SubjectsTest(unittest.TestCase):
         '', \
         [] \
       ) \
-    ]
-    self.answers = [ \
     ]
   def runTest(self):
     for i in xrange(len(self.cases)):
