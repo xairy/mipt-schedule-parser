@@ -8,26 +8,53 @@ import sets
 import sys
 import xlrd
 
+#TODO: четные недели
+#TODO: альтернативныe курс.
+
+# ['ii', 'ee'] -> ['ii ee', 'ii ee.', 'ii. ee', 'ii. ee.',
+#                  'Ii ee', 'Ii ee.', 'Ii. ee', 'Ii. ee.',
+#                  'ii Ee', 'ii Ee.', 'ii. Ee', 'ii. Ee.',
+#                  'Ii Ee', 'Ii Ee.', 'Ii. Ee', 'Ii. Ee.']
 def DotCapitalJoin(list):
   if list == []:
     return ['']
   result = []
-  tail = DotCapitalJoin(list[1:])
   head_lower = list[0]
   head_upper = list[0][0].upper() + list[0][1:]
-  for elem in tail:
+  tail_list = DotCapitalJoin(list[1:])
+  for elem in tail_list:
     result.append((head_upper + '. ' + elem).rstrip())
     result.append((head_upper + ' ' + elem).rstrip())
     result.append((head_lower + '. ' + elem).rstrip())
     result.append((head_lower + ' ' + elem).rstrip())
   return result
 
-buildings = ['ГК', 'ЛК', 'НК', 'КПМ', 'РТК']
+# 'ieg' -> ['ieg', 'Ieg', 'iEg', 'IEg', 'ieG', 'IeG', 'iEG', 'IEG']
+def CapitalVary(string):
+  if string == '':
+    return ['']
+  result = []
+  head_lower = string[0].lower()
+  head_upper = string[0].upper()
+  tail_list = CapitalVary(string[1:])
+  for elem in tail_list:
+    result.append(head_lower + elem)
+    result.append(head_upper + elem)
+  return result
+
+gk = ['ГК'] + CapitalVary('ГК')
+lk = ['ЛК'] + CapitalVary('ЛК')
+nk = ['НК'] + CapitalVary('НК')
+kpm = ['КПМ'] + CapitalVary('КПМ')
+rtk = ['РТК'] + CapitalVary('РТК')
+buildings = gk + lk + nk + kpm + rtk
+
 bh = ['Б. Хим.'] + DotCapitalJoin(['б', 'хим'])
 bf = ['Б. Физ.'] + DotCapitalJoin(['б', 'физ'])
 gf = ['Гл. Физ.'] + DotCapitalJoin(['гл', 'физ'])
 az = ['Акт. Зал'] + DotCapitalJoin(['акт', 'зал'])
-lecture_rooms = bh + bf + gf + az
+cz = ['Чит. Зал'] + DotCapitalJoin(['чит', 'зал'])
+lecture_rooms = bh + bf + gf + az + cz
 
 first_teacher_re = regex.compile(
   '(?P<teacher>' + \
@@ -39,17 +66,19 @@ first_teacher_re = regex.compile(
 )
 
 second_teacher_re = regex.compile(
-  '/(?P<teacher>' + \
-    '(?:[^/]*? |)' + \
+  '/' + \
+  '(?:[^/]*? |)' + \
+  '(?P<teacher>' + \
     '(?P<surname>[А-ЯЁ][а-яА-ЯёЁ-]+)' + \
     '(?:' + ' ' + \
       '(?P<first_initial>[А-Я])\.?' + ' ' + \
       '(?P<second_initial>[А-Я])\.?' + \
-    ')?' + ' ?' + \
-  ')/'
+    ')?' + \
+  ')' + \
+  ' ?/'
 )
 
-first_location_re = regex.compile(
+building_room_re = regex.compile(
   '(?P<location>' + \
     '(?P<room>[0-9]+а?)' + ' ?' + \
     '(?P<building>' + '|'.join(buildings) + ')' + \
@@ -57,7 +86,7 @@ first_location_re = regex.compile(
   '(?:[^а-яА-ЯёЁ]|$)'
 )
 
-second_location_re = regex.compile(
+lecture_room_re = regex.compile(
   '(?P<location>' + \
     '(?P<room>' + '|'.join(lecture_rooms) + ')' + \
   ')' + \
@@ -105,20 +134,33 @@ def GetTeachers(value):
       second_initial = m.group('second_initial')
       if len(surname) >= 3:
         teachers.append((surname, first_initial, second_initial))
+      value = value[:m.start('teacher')] + value[m.end('teacher'):]
   return teachers
 
 def GetLocations(value):
   locations = []
   while True:
-    m = first_location_re.search(value)
+    m = building_room_re.search(value)
     if m == None:
       break
     room = m.group('room')
     building = m.group('building')
-    locations.append((room, building))
+    if building in gk:
+      building = gk[0]
+    if building in lk:
+      building = lk[0]
+    if building in nk:
+      building = nk[0]
+    if building in kpm:
+      building = kpm[0]
+    if building in rtk:
+      building = rtk[0]
+    location = (room, building)
+    if location not in locations:
+      locations.append(location)
     value = value[:m.start('location')] + value[m.end('location'):]
   while True:
-    m = second_location_re.search(value)
+    m = lecture_room_re.search(value)
     if m == None:
       break
     room = m.group('room')
@@ -130,7 +172,11 @@ def GetLocations(value):
       room = gf[0]
     if room in az:
       room = az[0]
-    locations.append((room, None))
+    if room in cz:
+      room = cz[0]
+    location = (room, None)
+    if location not in locations:
+      locations.append(location)
     value = value[:m.start('location')] + value[m.end('location'):]
   return locations
 
@@ -144,7 +190,7 @@ if __name__ == '__main__':
     GetValues('2013_fall/6kurs.xls') \
   )
 
-  for value in values:
+  for value in values0:
     value = Normalize(value)
     locations = GetLocations(value)
     teachers = GetTeachers(value)
