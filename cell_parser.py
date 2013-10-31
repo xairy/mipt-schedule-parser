@@ -10,9 +10,9 @@ import sys
 import unicodedata
 import xlrd
 
+#TODO: locations and teachers by order.
 #TODO: четные недели
 #TODO: альтернативныe курс.
-#TODO: 'МСС-Доц. Извеков-430 ГК, Доцент Березникова М. В. . -211 ГК; Проф. Рыжак Е. И. - 532 ГК'
 
 # ['ii', 'ee'] -> ['ii ee', 'ii ee.', 'ii. ee', 'ii. ee.',
 #                  'Ii ee', 'Ii ee.', 'Ii. ee', 'Ii. ee.',
@@ -69,16 +69,12 @@ first_teacher_re = regex.compile(
 )
 
 second_teacher_re = regex.compile(
-  '/' + \
-  '(?:[^/]*? |)' + \
+  '(?:/|\-)' + \
+  '(?:[^/\-]*? |)' + \
   '(?P<teacher>' + \
     '(?P<surname>[А-ЯЁ][а-яА-ЯёЁ-]+)' + \
-    '(?:' + ' ' + \
-      '(?P<first_initial>[А-Я])\.?' + ' ' + \
-      '(?P<second_initial>[А-Я])\.?' + \
-    ')?' + \
   ')' + \
-  ' ?/'
+  ' ?(?:/|\-)'
 )
 
 building_room_re = regex.compile(
@@ -158,14 +154,12 @@ def GetTeachers(value):
     if len(surname) >= 3:
       teachers.append((surname, first_initial, second_initial))
     value = value[:m.start('teacher')] + value[m.end('teacher'):]
-  if len(teachers) == 0:
+  if True or len(teachers) == 0:
     m = second_teacher_re.search(value)
     if m != None:
       surname = m.group('surname')
-      first_initial = m.group('first_initial')
-      second_initial = m.group('second_initial')
       if len(surname) >= 3:
-        teachers.append((surname, first_initial, second_initial))
+        teachers.append((surname, None, None))
       value = value[:m.start('teacher')] + value[m.end('teacher'):]
   return teachers
 
