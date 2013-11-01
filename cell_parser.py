@@ -10,7 +10,11 @@ import sys
 import unicodedata
 import xlrd
 
-#TODO: locations and teachers by order.
+__author__ = "Andrey Konovalov"
+__copyright__ = "Copyright (C) 2013 Andrey Konovalov"
+__license__ = "BSD"
+__version__ = "0.1"
+
 #TODO: четные недели
 #TODO: альтернативныe курс.
 
@@ -61,7 +65,7 @@ lecture_rooms = bh + bf + gf + az + cz
 
 first_teacher_re = regex.compile(
   '(?P<teacher>' + \
-    '(?P<surname>[А-ЯЁ][а-яА-ЯёЁ-]+)' + ' ' + \
+    '(?P<surname>[А-ЯЁ][а-яё]+(?:\-[А-ЯЁ][а-яё]+)?)' + ' ' + \
     '(?P<first_initial>[А-ЯЁ])\.?' + ' ' + \
     '(?P<second_initial>[А-ЯЁ])\.?' + \
   ')' + \
@@ -72,7 +76,7 @@ second_teacher_re = regex.compile(
   '(?:/|\-)' + \
   '(?:[^/\-]*? |)' + \
   '(?P<teacher>' + \
-    '(?P<surname>[А-ЯЁ][а-яА-ЯёЁ-]+)' + \
+    '(?P<surname>[А-ЯЁ][а-яё]+(?:\-[А-ЯЁ][а-яё]+)?)' + \
   ')' + \
   ' ?(?:/|\-)'
 )
@@ -143,73 +147,73 @@ def GetValues(file):
 
 def GetTeachers(value):
   value = Simplify(value)
-  teachers = []
+  teacher_entries = []
   while True:
     m = first_teacher_re.search(value)
     if m == None:
       break
+    teacher = m.group('teacher')
     surname = m.group('surname')
     first_initial = m.group('first_initial')
     second_initial = m.group('second_initial')
+    start = m.start('teacher')
+    end = m.end('teacher')
     if len(surname) >= 3:
-      teachers.append((surname, first_initial, second_initial))
-    value = value[:m.start('teacher')] + value[m.end('teacher'):]
-  if True or len(teachers) == 0:
-    m = second_teacher_re.search(value)
-    if m != None:
-      surname = m.group('surname')
-      if len(surname) >= 3:
-        teachers.append((surname, None, None))
-      value = value[:m.start('teacher')] + value[m.end('teacher'):]
-  return teachers
+      teacher_entries.append((start, (surname, first_initial, second_initial)))
+    value = value[:start] + ('$' * len(teacher)) + value[end:]
+  m = second_teacher_re.search(value)
+  if m != None:
+    teacher = m.group('teacher')
+    surname = m.group('surname')
+    start = m.start('teacher')
+    end = m.end('teacher')
+    if len(surname) >= 3:
+      teacher_entries.append((start, (surname, None, None)))
+    value = value[:start] + ('$' * len(teacher)) + value[end:]
+  teacher_entries.sort()
+  teacher_list = [teacher for (offset, teacher) in teacher_entries]
+  return teacher_list
 
 def GetLocations(value):
   value = Simplify(value)
-  locations = []
+  location_entries = []
   while True:
     m = building_room_re.search(value)
     if m == None:
       break
+    location = m.group('location')
     room = m.group('room')
     building = m.group('building')
-    if building in gk:
-      building = gk[0]
-    if building in lk:
-      building = lk[0]
-    if building in nk:
-      building = nk[0]
-    if building in kpm:
-      building = kpm[0]
-    if building in rtk:
-      building = rtk[0]
-    location = (room, building)
-    if location not in locations:
-      locations.append(location)
-    value = value[:m.start('location')] + value[m.end('location'):]
+    for building_kind in [gk, lk, nk, kpm, rtk]:
+      if building in building_kind:
+        building = building_kind[0]
+    start = m.start('location')
+    end = m.end('location')
+    location_entries.append((start, (room, building)))
+    value = value[:start] + ('$' * len(location)) + value[end:]
   while True:
     m = lecture_room_re.search(value)
     if m == None:
       break
+    location = m.group('location')
     room = m.group('room')
-    if room in bh:
-      room = bh[0]
-    if room in bf:
-      room = bf[0]
-    if room in gf:
-      room = gf[0]
-    if room in az:
-      room = az[0]
-    if room in cz:
-      room = cz[0]
-    location = (room, None)
-    if location not in locations:
-      locations.append(location)
-    value = value[:m.start('location')] + value[m.end('location'):]
-  return locations
+    for room_kind in [bh, bf, gf, az, cz]:
+      if room in room_kind:
+        room = room_kind[0]
+    start = m.start('location')
+    end = m.end('location')
+    location_entries.append((start, (room, None)))
+    value = value[:start] + ('$' * len(location)) + value[end:]
+  location_entries.sort()
+  unique_locations = []
+  for (offset, location) in location_entries:
+    if location not in unique_locations:
+      unique_locations.append(location)
+  return unique_locations
 
 def GetSubjects(value):
   value = Normalize(value)
-  subjects = []
+  subject_entries = []
   for i in xrange(len(subject_res)):
     subject_re = subject_res[i]
     subject_name = subject_names[i][0]
@@ -217,8 +221,12 @@ def GetSubjects(value):
     if m == None:
       continue
     subject = m.group('subject')
-    subjects.append(subject_name)
-    value = value[:m.start('subject')] + value[m.end('subject'):]
+    start = m.start('subject')
+    end = m.end('subject')
+    subject_entries.append((start, subject_name))
+    value = value[:start] + ('$' * len(subject)) + value[end:]
+  subject_entries.sort()
+  subjects = [subject for (offset, subject) in subject_entries]
   return subjects
 
 if __name__ == '__main__':
