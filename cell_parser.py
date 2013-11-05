@@ -3,6 +3,7 @@
 
 from __future__ import unicode_literals
 
+import fileinput
 import regex
 import sets
 import string
@@ -226,37 +227,30 @@ def GetSubjects(value):
   subjects = [subject for (offset, subject) in subject_entries]
   return subjects
 
-if __name__ == '__main__':
-  values = \
-    GetValues('2013_fall/1kurs.xls').union( \
-    GetValues('2013_fall/2kurs.xls')).union( \
-    GetValues('2013_fall/3kurs.xls')).union( \
-    GetValues('2013_fall/4kurs.xls')).union( \
-    GetValues('2013_fall/5kurs.xls')).union( \
-    GetValues('2013_fall/6kurs.xls') \
-  )
+def TeacherToStr(teacher):
+  s = teacher[0]
+  if teacher[1] != None and teacher[2] != None:
+    s += ' ' + teacher[1] + '. ' + teacher[2] + '.'
+  return s
 
-  for value in values:
+def LocationToStr(locations):
+  s = location[0]
+  if location[1] != None:
+    s += ' ' + location[1]
+  return s
+
+if __name__ == '__main__':
+  for value in fileinput.input():
+    value = value.decode('utf-8')
+
+    subjects = GetSubjects(value)
     locations = GetLocations(value)
     teachers = GetTeachers(value)
-    subjects = GetSubjects(value)
-    print value.encode('utf-8')
-    for subject in subjects:
-      print ('<s ' + subject + ' >').encode('utf-8')
-    for location in locations:
-      print '<l'.encode('utf-8'),
-      if location[0] != None:
-        print location[0].encode('utf-8'),
-      if location[1] != None:
-        print location[1].encode('utf-8'),
-      print '>'.encode('utf-8')
-    for teacher in teachers:
-      print '<t'.encode('utf-8'),
-      if teacher[0] != None:
-        print teacher[0].encode('utf-8'),
-      if teacher[1] != None:
-        print teacher[1].encode('utf-8'),
-      if teacher[2] != None:
-        print teacher[2].encode('utf-8'),
-      print '>'.encode('utf-8')
-    print
+
+    # Subjects are string as they are.
+    locations = [LocationToStr(location) for location in locations]
+    teachers = [TeacherToStr(teacher) for teacher in teachers]
+
+    print '$'.join(subjects).encode('utf-8')
+    print '$'.join(locations).encode('utf-8')
+    print '$'.join(teachers).encode('utf-8')
