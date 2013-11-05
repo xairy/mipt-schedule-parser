@@ -12,11 +12,8 @@ import xlrd
 
 __author__ = "Andrey Konovalov"
 __copyright__ = "Copyright (C) 2013 Andrey Konovalov"
-__license__ = "BSD"
+__license__ = "MIT"
 __version__ = "0.1"
-
-#TODO: четные недели
-#TODO: альтернативныe курс.
 
 # ['ii', 'ee'] -> ['ii ee', 'ii ee.', 'ii. ee', 'ii. ee.',
 #                  'Ii ee', 'Ii ee.', 'Ii. ee', 'Ii. ee.',

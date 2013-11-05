@@ -10,7 +10,7 @@ import cell_parser
 
 __author__ = "Andrey Konovalov"
 __copyright__ = "Copyright (C) 2013 Andrey Konovalov"
-__license__ = "BSD"
+__license__ = "MIT"
 __version__ = "0.1"
 
 class LocationsTest(unittest.TestCase):
