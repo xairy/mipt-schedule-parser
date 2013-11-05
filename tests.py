@@ -8,6 +8,11 @@ import xlrd
 
 import parser
 
+__author__ = "Andrey Konovalov"
+__copyright__ = "Copyright (C) 2013 Andrey Konovalov"
+__license__ = "MIT"
+__version__ = "0.1"
+
 class WeekdayRangeTest(unittest.TestCase):
   def setUp(self):
     self.schedule = parser.Schedule()
@@ -113,6 +118,76 @@ class GroupRangeTest(unittest.TestCase):
     self.assertEqual(self.schedule.GetGroupRange(5, 3), (48, 49))
     self.assertEqual(self.schedule.GetGroupRange(8, 0), (73, 74))
     self.assertEqual(self.schedule.GetGroupRange(8, 3), (76, 77))
+
+class WeekdayByRowTest(unittest.TestCase):
+  def setUp(self):
+    self.schedule = parser.Schedule()
+    self.schedule.Parse('2013_fall/4kurs.xls')
+
+  def runTest(self):
+    self.assertEqual(self.schedule.GetWeekdayByRow(4), 0)
+    self.assertEqual(self.schedule.GetWeekdayByRow(5), 0)
+    self.assertEqual(self.schedule.GetWeekdayByRow(10), 0)
+    self.assertEqual(self.schedule.GetWeekdayByRow(13), 1)
+    self.assertEqual(self.schedule.GetWeekdayByRow(25), 2)
+    self.assertEqual(self.schedule.GetWeekdayByRow(26), 2)
+    self.assertEqual(self.schedule.GetWeekdayByRow(28), 3)
+    self.assertEqual(self.schedule.GetWeekdayByRow(44), 4)
+    self.assertEqual(self.schedule.GetWeekdayByRow(48), 5)
+    self.assertEqual(self.schedule.GetWeekdayByRow(56), 5)
+
+class PairByRowTest(unittest.TestCase):
+  def setUp(self):
+    self.schedule = parser.Schedule()
+    self.schedule.Parse('2013_fall/4kurs.xls')
+
+  def runTest(self):
+    self.assertEqual(self.schedule.GetPairByRow(4), (0, 0))
+    self.assertEqual(self.schedule.GetPairByRow(5), (1, 0))
+    self.assertEqual(self.schedule.GetPairByRow(10), (6, 0))
+    self.assertEqual(self.schedule.GetPairByRow(12), (0, 0))
+    self.assertEqual(self.schedule.GetPairByRow(28), (0, 0))
+    self.assertEqual(self.schedule.GetPairByRow(29), (0, 1))
+    self.assertEqual(self.schedule.GetPairByRow(30), (1, 0))
+    self.assertEqual(self.schedule.GetPairByRow(33), (3, 1))
+    self.assertEqual(self.schedule.GetPairByRow(56), (6, 0))
+
+class DepartmentByColumnTest(unittest.TestCase):
+  def setUp(self):
+    self.schedule = parser.Schedule()
+    self.schedule.Parse('2013_fall/4kurs.xls')
+
+  def runTest(self):
+    self.assertEqual(self.schedule.GetDepartmentByColumn(2), 0)
+    self.assertEqual(self.schedule.GetDepartmentByColumn(3), 0)
+    self.assertEqual(self.schedule.GetDepartmentByColumn(10), 0)
+    self.assertEqual(self.schedule.GetDepartmentByColumn(13), 1)
+    self.assertEqual(self.schedule.GetDepartmentByColumn(18), 1)
+    self.assertEqual(self.schedule.GetDepartmentByColumn(19), 1)
+    self.assertEqual(self.schedule.GetDepartmentByColumn(22), 2)
+    self.assertEqual(self.schedule.GetDepartmentByColumn(24), 2)
+    self.assertEqual(self.schedule.GetDepartmentByColumn(31), 2)
+    self.assertEqual(self.schedule.GetDepartmentByColumn(39), 4)
+    self.assertEqual(self.schedule.GetDepartmentByColumn(64), 7)
+    self.assertEqual(self.schedule.GetDepartmentByColumn(70), 7)
+    self.assertEqual(self.schedule.GetDepartmentByColumn(73), 8)
+    self.assertEqual(self.schedule.GetDepartmentByColumn(76), 8)
+
+class GroupByColumnTest(unittest.TestCase):
+  def setUp(self):
+    self.schedule = parser.Schedule()
+    self.schedule.Parse('2013_fall/4kurs.xls')
+
+  def runTest(self):
+    self.assertEqual(self.schedule.GetGroupByColumn(2), (0, 0))
+    self.assertEqual(self.schedule.GetGroupByColumn(3), (1, 0))
+    self.assertEqual(self.schedule.GetGroupByColumn(10), (8, 0))
+    self.assertEqual(self.schedule.GetGroupByColumn(23), (1, 0))
+    self.assertEqual(self.schedule.GetGroupByColumn(24), (1, 1))
+    self.assertEqual(self.schedule.GetGroupByColumn(25), (2, 0))
+    self.assertEqual(self.schedule.GetGroupByColumn(26), (3, 0))
+    self.assertEqual(self.schedule.GetGroupByColumn(27), (3, 1))
+    self.assertEqual(self.schedule.GetGroupByColumn(76), (3, 0))
 
 if __name__ == '__main__':
    unittest.main()

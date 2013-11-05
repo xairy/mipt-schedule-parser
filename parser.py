@@ -3,8 +3,14 @@
 
 from __future__ import unicode_literals
 
+import sets
 import sys
 import xlrd
+
+__author__ = "Andrey Konovalov"
+__copyright__ = "Copyright (C) 2013 Andrey Konovalov"
+__license__ = "MIT"
+__version__ = "0.1"
 
 DAYS = 'Дни'
 HOURS = 'Часы'
@@ -124,5 +130,113 @@ class Schedule:
   def GetGroupList(self, department_index):
     return self.groups[department_index]
 
+  def GetGroup(self, department_index, group_index):
+    return self.groups[department_index][group_index]
+
   def GetGroupRange(self, department_index, group_index):
     return self.group_ranges[department_index][group_index]
+
+  def GetWeekdayByRow(self, row):
+    for index in xrange(len(self.weekday_ranges)):
+      wr = self.weekday_ranges[index]
+      if wr[0] <= row and row < wr[1]:
+        return index
+    assert False
+
+  def GetPairByRow(self, row):
+    weekday_index = self.GetWeekdayByRow(row)
+    hours_ranges = self.hours_ranges[weekday_index]
+    for index in xrange(len(hours_ranges)):
+      hr = hours_ranges[index]
+      if hr[0] <= row and row < hr[1]:
+        return (index, row - hr[0])
+    assert False
+
+  def GetDepartmentByColumn(self, column):
+    for index in xrange(len(self.department_ranges)):
+      dr = self.department_ranges[index]
+      if dr[0] <= column and column < dr[1]:
+        return index
+    assert False
+
+  def GetGroupByColumn(self, column):
+    department_index = self.GetDepartmentByColumn(column)
+    group_ranges = self.group_ranges[department_index]
+    for index in xrange(len(group_ranges)):
+      gr = group_ranges[index]
+      if gr[0] <= column and column < gr[1]:
+        return (index, column - gr[0])
+    assert False
+
+  def GetScheduleTable(self, department_index, weekday_index):
+    dr = self.department_ranges[department_index]
+    wr = self.weekday_ranges[weekday_index]
+
+    groups_count = len(self.groups[department_index])
+    pairs_count = 7
+    schedule_table = [[[['', ''], ['', '']] for i in xrange(pairs_count)] for i in xrange(groups_count)]
+
+    for (rb, re, cb, ce) in self.worksheet.merged_cells:
+      if wr[0] <= rb and re <= wr[1] and dr[0] <= cb and ce <= dr[1]:
+        value = self.worksheet.cell_value(rb, cb)
+        if value == '':
+          continue
+        for row in xrange(rb, re):
+          for column in xrange(cb, ce):
+            p1, p2 = self.GetPairByRow(row)
+            g1, g2 = self.GetGroupByColumn(column)
+            schedule_table[g1][p1][g2][p2] = value
+
+            hr = self.hours_ranges[weekday_index][p1]
+            gr = self.group_ranges[department_index][g1]
+
+            if p2 == 0 and hr[1] - hr[0] == 1:
+              schedule_table[g1][p1][g2][1] = value
+            if g2 == 0 and gr[1] - gr[0] == 1:
+              schedule_table[g1][p1][1][p2] = value
+            if p2 == 0 and hr[1] - hr[0] == 1 and g2 == 0 and gr[1] - gr[0] == 1:
+              schedule_table[g1][p1][1][1] = value
+
+    for row in xrange(wr[0], wr[1]):
+      for column in xrange(dr[0], dr[1]):
+        value = self.worksheet.cell_value(row, column)
+        if value == '':
+          continue
+
+        p1, p2 = self.GetPairByRow(row)
+        g1, g2 = self.GetGroupByColumn(column)
+        schedule_table[g1][p1][g2][p2] = value
+
+        hr = self.hours_ranges[weekday_index][p1]
+        gr = self.group_ranges[department_index][g1]
+
+        if p2 == 0 and hr[1] - hr[0] == 1:
+          schedule_table[g1][p1][g2][1] = value
+        if g2 == 0 and gr[1] - gr[0] == 1:
+          schedule_table[g1][p1][1][p2] = value
+        if p2 == 0 and hr[1] - hr[0] == 1 and g2 == 0 and gr[1] - gr[0] == 1:
+          schedule_table[g1][p1][1][1] = value
+
+    return schedule_table
+
+def PrintSchedule(file):
+  schedule = Schedule()
+  schedule.Parse(file)
+  for department_index in xrange(schedule.GetDepartmentCount()):
+    schedule_tables = []
+    for weekday_index in xrange(6):
+      schedule_tables.append(schedule.GetScheduleTable(department_index, weekday_index))
+    group_count = schedule.GetGroupCount(department_index)
+    for group_index in xrange(group_count):
+      print schedule.GetGroup(department_index, group_index)
+      for weekday_index in xrange(6):
+        for values in schedule_tables[weekday_index][group_index]:
+          print values[0][0].encode('utf8')
+          print values[1][0].encode('utf8')
+          print values[0][1].encode('utf8')
+          print values[1][1].encode('utf8')
+          #print '1 ' + values[0][0] + ' | ' + values[1][0]
+          #print '2 ' + values[0][1] + ' | ' + values[1][1]
+
+if __name__ == '__main__':
+  PrintSchedule('2013_fall/4kurs.xls')
