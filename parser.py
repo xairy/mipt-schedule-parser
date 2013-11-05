@@ -239,4 +239,5 @@ def PrintSchedule(file):
           #print '2 ' + values[0][1] + ' | ' + values[1][1]
 
 if __name__ == '__main__':
-  PrintSchedule('2013_fall/4kurs.xls')
+  assert len(sys.argv) == 2
+  PrintSchedule(sys.argv[1])
