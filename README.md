@@ -30,13 +30,13 @@ Since each class can last for an noninteger number of class hours (e.g. 1.5)
 and sometimes one half of an academic group has one class and the other half
 has another, each class is described with 4 values.
 
-|---------------|-------------------------------------------------|
-|               |                       073                       |
-|---------------|-------------------------------------------------|
-|               | Subgroup a, Subclass 1 | Subgroup b, Subclass 1 |
-| 12.20 - 13.45 |------------------------|------------------------|
-|               | Subgroup a, Subclass 2 | Subgroup b, Subclass 2 |
-|---------------|-------------------------------------------------|
+    |---------------|-------------------------------------------------|
+    |               |                       073                       |
+    |---------------|-------------------------------------------------|
+    |               | Subgroup a, Subclass 1 | Subgroup b, Subclass 1 |
+    | 12.20 - 13.45 |------------------------|------------------------|
+    |               | Subgroup a, Subclass 2 | Subgroup b, Subclass 2 |
+    |---------------|-------------------------------------------------|
 
 These 4 values are printed each on a separate line in the following order:
 
