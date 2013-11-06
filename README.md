@@ -64,7 +64,7 @@ So, basically, the script prints the schedule as the follows:
 
 Usage:
 
-    $ python parser.py 2013_fall/1kurs.xls
+    $ python parser.py 2013_fall/4kurs.xls
     011
     ...
     Теорет.физика 509 ГК 
@@ -90,11 +90,9 @@ Usage:
 The script works in a manner similar to addr2line.
 For each line read from the input it will print 3 lines:
 
-1. $-separated list of all the subjects extracted
-2. $-separated list of all the professors' names extracted
-
-
-3. $-separated list of all the buldings and room numbers extracted
+    $-separated list of all the subjects extracted
+    $-separated list of all the professors' names extracted
+    $-separated list of all the buldings and room numbers extracted
 
 If you are running this script manually you may want to press Ctrl + D to flush
 the input you entered so far.
