@@ -99,7 +99,7 @@ the input you entered so far.
 
 Usage:
 
-    $ ./cell_parser
+    $ python cell_parser.py
     Лин методы в р/т /Доц. Григорьев А. А. /117 ГК
     <Ctrl + D>
     Линейные методы в радиотехнике
