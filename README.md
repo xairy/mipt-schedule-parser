@@ -50,7 +50,7 @@ then all 4 values will be the same.
 
 These values are actually the values of the according excel cells.
 
-So, basically, the script prints the schedule as the follows:
+So, basically, the script prints the schedule as follows:
 
     for each Group:
       print Group.Number()
