@@ -12,7 +12,7 @@ import unicodedata
 import xlrd
 
 __author__ = "Andrey Konovalov"
-__copyright__ = "Copyright (C) 2013 Andrey Konovalov"
+__copyright__ = "Copyright (C) 2014 Andrey Konovalov"
 __license__ = "MIT"
 __version__ = "0.1"
 
