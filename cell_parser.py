@@ -129,20 +129,6 @@ def Normalize(s):
   s = ' '.join(s.split())
   return s
 
-def GetValues(file):
-  workbook = xlrd.open_workbook(file, formatting_info=True)
-  worksheet = workbook.sheet_by_index(0)
-
-  values = sets.Set()
-  for (rb, re, cb, ce) in worksheet.merged_cells:
-    for row in xrange(worksheet.nrows):
-      for col in xrange(worksheet.ncols):
-        value = worksheet.cell_value(row, col)
-        if len(value) >= 4:
-          #value = value.encode('utf-8')
-          values.add(value)
-  return values
-
 def GetTeachers(value):
   value = Simplify(value)
   teacher_entries = []
@@ -247,7 +233,7 @@ if __name__ == '__main__':
     locations = GetLocations(value)
     teachers = GetTeachers(value)
 
-    # Subjects are string as they are.
+    # Subjects are strings as they are.
     locations = [LocationToStr(location) for location in locations]
     teachers = [TeacherToStr(teacher) for teacher in teachers]
 
