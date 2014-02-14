@@ -40,15 +40,16 @@ has another, each class is described with 4 values.
 
 These 4 values are printed each on a separate line in the following order:
 
-    Subgroup a, Subclass 1
-    Subgroup b, Subclass 1
-    Subgroup a, Subclass 2
-    Subgroup b, Subclass 2
+    Class(Subgroup a, Subclass 1).Description()
+    Class(Subgroup b, Subclass 1).Description()
+    Class(Subgroup a, Subclass 2).Description()
+    Class(Subgroup b, Subclass 2).Description()
 
 If the both group halves have the same class in each half of a class hour,
 then all 4 values will be the same.
 
-These values are actually the values of the according excel cells.
+Each of these 4 values consists of the color of the according excel cell and
+its value separated by the tab character.
 
 So, basically, the script prints the schedule as follows:
 
@@ -57,31 +58,31 @@ So, basically, the script prints the schedule as follows:
       for each Weekday:
         for each ClassHour:
           Class = Schedule.Class(Group, Weekday, ClassHour)
-          print Class.Sub(a, 1).Value()
-          print Class.Sub(b, 1).Value()
-          print Class.Sub(a, 2).Value()
-          print Class.Sub(b, 2).Value()
+          print Class.Sub(a, 1).Color() + \t + Class.Sub(a, 1).Value()
+          print Class.Sub(b, 1).Color() + \t + Class.Sub(a, 1).Value()
+          print Class.Sub(a, 2).Color() + \t + Class.Sub(a, 1).Value()
+          print Class.Sub(b, 2).Color() + \t + Class.Sub(a, 1).Value()
 
 Usage:
 
     $ python parser.py 2013_fall/4kurs.xls
     011
     ...
-    Теорет.физика 509 ГК 
-    Теорет.физика 509 ГК 
-    Теорет.физика 509 ГК 
-    Теорет.физика 509 ГК
+    1 Теорет.физика 509 ГК 
+    1 Теорет.физика 509 ГК 
+    1 Теорет.физика 509 ГК 
+    1 Теорет.физика 509 ГК
     ...
     034
     ...
-    Физ.основы ДЗ 430 ГК
-    Физическая механика 113 ГК
-    Физ.основы ДЗ 430 ГК
-    Физическая механика 113 ГК
-    Физ.основы ДЗ 430 ГК
-    Физ.мех. 514 ГК
-    Физ.основы ДЗ 430 ГК
-    Физ.мех. 514 ГК
+    2 Физ.основы ДЗ 430 ГК
+    2 Физическая механика 113 ГК
+    2 Физ.основы ДЗ 430 ГК
+    2 Физическая механика 113 ГК
+    1 Физ.основы ДЗ 430 ГК
+    1 Физ.мех. 514 ГК
+    1 Физ.основы ДЗ 430 ГК
+    1 Физ.мех. 514 ГК
     ...
 
 

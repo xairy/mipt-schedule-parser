@@ -168,54 +168,75 @@ class Schedule:
         return (index, column - gr[0])
     assert False
 
+  def GetCellColor(self, row, column):
+    cell = self.worksheet.cell(row, column)
+    xfx = self.worksheet.cell_xf_index(row, column)
+    xf = self.workbook.xf_list[xfx]
+    bgx = xf.background.pattern_colour_index
+    rgb = self.workbook.colour_map[bgx]
+    # (204, 255, 204) -> 0 : empty, (204, 255, 255) -> 1 : seminar,
+    # (255, 153, 204) -> 2 : lecture, (255, 255, 153) -> 3 : other
+    if rgb == (204, 255, 204):
+      return 0
+    elif rgb == (204, 255, 255):
+      return 1
+    elif rgb == (255, 153, 204):
+      return 2
+    elif rgb == (255, 255, 153):
+      return 3
+    return -1
+
   def GetScheduleTable(self, department_index, weekday_index):
     dr = self.department_ranges[department_index]
     wr = self.weekday_ranges[weekday_index]
 
     groups_count = len(self.groups[department_index])
     pairs_count = 7
-    schedule_table = [[[['', ''], ['', '']] for i in xrange(pairs_count)] for i in xrange(groups_count)]
+    schedule_table = [[[[('', 0), ('', 0)], [('', 0), ('', 0)]]
+      for i in xrange(pairs_count)] for i in xrange(groups_count)]
 
     for (rb, re, cb, ce) in self.worksheet.merged_cells:
       if wr[0] <= rb and re <= wr[1] and dr[0] <= cb and ce <= dr[1]:
         value = self.worksheet.cell_value(rb, cb)
+        color = self.GetCellColor(rb, cb)
         if value == '':
           continue
         for row in xrange(rb, re):
           for column in xrange(cb, ce):
             p1, p2 = self.GetPairByRow(row)
             g1, g2 = self.GetGroupByColumn(column)
-            schedule_table[g1][p1][g2][p2] = value
+            schedule_table[g1][p1][g2][p2] = (value, color)
 
             hr = self.hours_ranges[weekday_index][p1]
             gr = self.group_ranges[department_index][g1]
 
             if p2 == 0 and hr[1] - hr[0] == 1:
-              schedule_table[g1][p1][g2][1] = value
+              schedule_table[g1][p1][g2][1] = (value, color)
             if g2 == 0 and gr[1] - gr[0] == 1:
-              schedule_table[g1][p1][1][p2] = value
+              schedule_table[g1][p1][1][p2] = (value, color)
             if p2 == 0 and hr[1] - hr[0] == 1 and g2 == 0 and gr[1] - gr[0] == 1:
-              schedule_table[g1][p1][1][1] = value
+              schedule_table[g1][p1][1][1] = (value, color)
 
     for row in xrange(wr[0], wr[1]):
       for column in xrange(dr[0], dr[1]):
         value = self.worksheet.cell_value(row, column)
+        color = self.GetCellColor(row, column)
         if value == '':
           continue
 
         p1, p2 = self.GetPairByRow(row)
         g1, g2 = self.GetGroupByColumn(column)
-        schedule_table[g1][p1][g2][p2] = value
+        schedule_table[g1][p1][g2][p2] = (value, color)
 
         hr = self.hours_ranges[weekday_index][p1]
         gr = self.group_ranges[department_index][g1]
 
         if p2 == 0 and hr[1] - hr[0] == 1:
-          schedule_table[g1][p1][g2][1] = value
+          schedule_table[g1][p1][g2][1] = (value, color)
         if g2 == 0 and gr[1] - gr[0] == 1:
-          schedule_table[g1][p1][1][p2] = value
+          schedule_table[g1][p1][1][p2] = (value, color)
         if p2 == 0 and hr[1] - hr[0] == 1 and g2 == 0 and gr[1] - gr[0] == 1:
-          schedule_table[g1][p1][1][1] = value
+          schedule_table[g1][p1][1][1] = (value, color)
 
     return schedule_table
 
@@ -231,12 +252,10 @@ def PrintSchedule(file):
       print schedule.GetGroup(department_index, group_index)
       for weekday_index in xrange(6):
         for values in schedule_tables[weekday_index][group_index]:
-          print values[0][0].encode('utf8')
-          print values[1][0].encode('utf8')
-          print values[0][1].encode('utf8')
-          print values[1][1].encode('utf8')
-          #print '1 ' + values[0][0] + ' | ' + values[1][0]
-          #print '2 ' + values[0][1] + ' | ' + values[1][1]
+          print ('%d\t%s' % (values[0][0][1], values[0][0][0])).encode('utf-8')
+          print ('%d\t%s' % (values[1][0][1], values[1][0][0])).encode('utf-8')
+          print ('%d\t%s' % (values[0][1][1], values[0][1][0])).encode('utf-8')
+          print ('%d\t%s' % (values[1][1][1], values[1][1][0])).encode('utf-8')
 
 if __name__ == '__main__':
   assert len(sys.argv) == 2
