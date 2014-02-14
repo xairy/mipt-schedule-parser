@@ -201,14 +201,15 @@ def GetSubjects(value):
   for i in xrange(len(subject_res)):
     subject_re = subject_res[i]
     subject_name = subject_names[i][0]
-    m = subject_re.search(value)
-    if m == None:
-      continue
-    subject = m.group('subject')
-    start = m.start('subject')
-    end = m.end('subject')
-    subject_entries.append((start, subject_name))
-    value = value[:start] + ('$' * len(subject)) + value[end:]
+    while True:
+      m = subject_re.search(value)
+      if m == None:
+        break
+      subject = m.group('subject')
+      start = m.start('subject')
+      end = m.end('subject')
+      subject_entries.append((start, subject_name))
+      value = value[:start] + ('$' * len(subject)) + value[end:]
   subject_entries.sort()
   subjects = [subject for (offset, subject) in subject_entries]
   return subjects
@@ -227,7 +228,7 @@ def LocationToStr(locations):
 
 if __name__ == '__main__':
   for value in fileinput.input():
-    value = value.decode('utf-8')
+    value = value.decode('utf-8').rstrip()
 
     subjects = GetSubjects(value)
     locations = GetLocations(value)
