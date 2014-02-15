@@ -60,6 +60,12 @@ then all 4 values will be the same.
 
 Each of these 4 values consists of the color of the according excel cell and
 its value separated by the tab character.
+  
+Colors are encoded as numbers, where
+green (empty) is encoded as 0,
+blue (seminars) - as 1,
+pink (lectures) - as 2,
+yellow (PE, foreign languages, etc.) - as 3.
 
 So, basically, the script prints the schedule as follows:
 
