@@ -3,9 +3,9 @@ MIPT Schedule parser
 
 The schedule parser consists of two independent scripts: one for converting
 a schedule xls file into a simple plain text format and the other one is for
-extracting subject's name, professor's name, building and room number from
-a raw description string. For convenience there is also a third script that
-does both those things simultaneously.
+extracting subject's name, professor's name, building' names and room number
+from a raw description string. For convenience there is also a third script
+that does both those things simultaneously.
 
 ### Prerequisites
 
@@ -78,21 +78,21 @@ Usage:
     $ python schedule_parser.py 2013_fall/4kurs.xls
     011
     ...
-    1 Теорет.физика 509 ГК 
-    1 Теорет.физика 509 ГК 
-    1 Теорет.физика 509 ГК 
-    1 Теорет.физика 509 ГК
+    1    Теорет.физика 509 ГК 
+    1    Теорет.физика 509 ГК 
+    1    Теорет.физика 509 ГК 
+    1    Теорет.физика 509 ГК
     ...
     034
     ...
-    2 Физ.основы ДЗ 430 ГК
-    2 Физическая механика 113 ГК
-    2 Физ.основы ДЗ 430 ГК
-    2 Физическая механика 113 ГК
-    1 Физ.основы ДЗ 430 ГК
-    1 Физ.мех. 514 ГК
-    1 Физ.основы ДЗ 430 ГК
-    1 Физ.мех. 514 ГК
+    2    Физ.основы ДЗ 430 ГК
+    2    Физическая механика 113 ГК
+    2    Физ.основы ДЗ 430 ГК
+    2    Физическая механика 113 ГК
+    1    Физ.основы ДЗ 430 ГК
+    1    Физ.мех. 514 ГК
+    1    Физ.основы ДЗ 430 ГК
+    1    Физ.мех. 514 ГК
     ...
 
 
@@ -132,19 +132,19 @@ Usage:
 
     $ ./full_parser.py 2014_spring/1.xls
     ...
-    2       Линейная алгебра / Доцент Чубаров И.А./   202 НК
+    2    Линейная алгебра / Доцент Чубаров И.А./   202 НК
     Линейная алгебра
     202 НК
     Чубаров И. А.
-    2       Линейная алгебра / Доцент Чубаров И.А./   202 НК
+    2    Линейная алгебра / Доцент Чубаров И.А./   202 НК
     Линейная алгебра
     202 НК
     Чубаров И. А.
-    2       Линейная алгебра / Доцент Чубаров И.А./   202 НК
+    2    Линейная алгебра / Доцент Чубаров И.А./   202 НК
     Линейная алгебра
     202 НК
     Чубаров И. А.
-    2       Линейная алгебра / Доцент Чубаров И.А./   202 НК
+    2    Линейная алгебра / Доцент Чубаров И.А./   202 НК
     Линейная алгебра
     202 НК
     Чубаров И. А.
