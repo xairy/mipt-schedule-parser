@@ -74,7 +74,7 @@ So, basically, the script prints the schedule as follows:
 
 Usage:
 
-    $ python parser.py 2013_fall/4kurs.xls
+    $ python schedule_parser.py 2013_fall/4kurs.xls
     011
     ...
     1 Теорет.физика 509 ГК 

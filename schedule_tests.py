@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 import unittest
 import xlrd
 
-import parser
+import schedule_parser
 
 __author__ = "Andrey Konovalov"
 __copyright__ = "Copyright (C) 2014 Andrey Konovalov"
@@ -15,7 +15,7 @@ __version__ = "0.1"
 
 class WeekdayRangeTest(unittest.TestCase):
   def setUp(self):
-    self.schedule = parser.Schedule()
+    self.schedule = schedule_parser.Schedule()
     self.schedule.Parse('2013_fall/4kurs.xls')
 
   def runTest(self):
@@ -28,7 +28,7 @@ class WeekdayRangeTest(unittest.TestCase):
 
 class DepartmentCountTest(unittest.TestCase):
   def setUp(self):
-    self.schedule = parser.Schedule()
+    self.schedule = schedule_parser.Schedule()
     self.schedule.Parse('2013_fall/4kurs.xls')
 
   def runTest(self):
@@ -36,7 +36,7 @@ class DepartmentCountTest(unittest.TestCase):
 
 class DepartmentRangeTest(unittest.TestCase):
   def setUp(self):
-    self.schedule = parser.Schedule()
+    self.schedule = schedule_parser.Schedule()
     self.schedule.Parse('2013_fall/4kurs.xls')
 
   def runTest(self):
@@ -52,7 +52,7 @@ class DepartmentRangeTest(unittest.TestCase):
 
 class DepartmentsRowTest(unittest.TestCase):
   def setUp(self):
-    self.schedule = parser.Schedule()
+    self.schedule = schedule_parser.Schedule()
     self.schedule.Parse('2013_fall/4kurs.xls')
 
   def runTest(self):
@@ -60,7 +60,7 @@ class DepartmentsRowTest(unittest.TestCase):
 
 class HoursColumnTest(unittest.TestCase):
   def setUp(self):
-    self.schedule = parser.Schedule()
+    self.schedule = schedule_parser.Schedule()
     self.schedule.Parse('2013_fall/4kurs.xls')
 
   def runTest(self):
@@ -68,7 +68,7 @@ class HoursColumnTest(unittest.TestCase):
 
 class HoursRangesTest(unittest.TestCase):
   def setUp(self):
-    self.schedule = parser.Schedule()
+    self.schedule = schedule_parser.Schedule()
     self.schedule.Parse('2013_fall/4kurs.xls')
 
   def runTest(self):
@@ -78,7 +78,7 @@ class HoursRangesTest(unittest.TestCase):
 
 class GroupCountTest(unittest.TestCase):
   def setUp(self):
-    self.schedule = parser.Schedule()
+    self.schedule = schedule_parser.Schedule()
     self.schedule.Parse('2013_fall/4kurs.xls')
 
   def runTest(self):
@@ -94,7 +94,7 @@ class GroupCountTest(unittest.TestCase):
 
 class GroupListTest(unittest.TestCase):
   def setUp(self):
-    self.schedule = parser.Schedule()
+    self.schedule = schedule_parser.Schedule()
     self.schedule.Parse('2013_fall/4kurs.xls')
 
   def runTest(self):
@@ -106,7 +106,7 @@ class GroupListTest(unittest.TestCase):
 
 class GroupRangeTest(unittest.TestCase):
   def setUp(self):
-    self.schedule = parser.Schedule()
+    self.schedule = schedule_parser.Schedule()
     self.schedule.Parse('2013_fall/4kurs.xls')
 
   def runTest(self):
@@ -121,7 +121,7 @@ class GroupRangeTest(unittest.TestCase):
 
 class WeekdayByRowTest(unittest.TestCase):
   def setUp(self):
-    self.schedule = parser.Schedule()
+    self.schedule = schedule_parser.Schedule()
     self.schedule.Parse('2013_fall/4kurs.xls')
 
   def runTest(self):
@@ -138,7 +138,7 @@ class WeekdayByRowTest(unittest.TestCase):
 
 class PairByRowTest(unittest.TestCase):
   def setUp(self):
-    self.schedule = parser.Schedule()
+    self.schedule = schedule_parser.Schedule()
     self.schedule.Parse('2013_fall/4kurs.xls')
 
   def runTest(self):
@@ -154,7 +154,7 @@ class PairByRowTest(unittest.TestCase):
 
 class DepartmentByColumnTest(unittest.TestCase):
   def setUp(self):
-    self.schedule = parser.Schedule()
+    self.schedule = schedule_parser.Schedule()
     self.schedule.Parse('2013_fall/4kurs.xls')
 
   def runTest(self):
@@ -175,7 +175,7 @@ class DepartmentByColumnTest(unittest.TestCase):
 
 class GroupByColumnTest(unittest.TestCase):
   def setUp(self):
-    self.schedule = parser.Schedule()
+    self.schedule = schedule_parser.Schedule()
     self.schedule.Parse('2013_fall/4kurs.xls')
 
   def runTest(self):
