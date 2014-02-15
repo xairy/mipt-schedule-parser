@@ -6,6 +6,15 @@ a schedule xls file into a simple plain text format and the other one is for
 extracting subject's name, professor's name, building and room number from
 a raw description string.
 
+### Prerequisites
+
+To run the parser scripts you need python 2.7, python-xlrd, python-regex.
+
+Ubuntu / Linux mint:
+
+    sudo apt-get install python-xlrd
+    sudo apt-get install python-regex
+
 ### Schedule parser script
 
 This script converts the schedule and prints it in the following format:
