@@ -220,24 +220,26 @@ def TeacherToStr(teacher):
     s += ' ' + teacher[1] + '. ' + teacher[2] + '.'
   return s
 
-def LocationToStr(locations):
+def LocationToStr(location):
   s = location[0]
   if location[1] != None:
     s += ' ' + location[1]
   return s
 
+def PrintValueInfo(value):
+  subjects = GetSubjects(value)
+  locations = GetLocations(value)
+  teachers = GetTeachers(value)
+
+  # Subjects are strings as they are.
+  locations = [LocationToStr(location) for location in locations]
+  teachers = [TeacherToStr(teacher) for teacher in teachers]
+
+  print '$'.join(subjects).encode('utf-8')
+  print '$'.join(locations).encode('utf-8')
+  print '$'.join(teachers).encode('utf-8')
+
 if __name__ == '__main__':
   for value in fileinput.input():
     value = value.decode('utf-8').rstrip()
-
-    subjects = GetSubjects(value)
-    locations = GetLocations(value)
-    teachers = GetTeachers(value)
-
-    # Subjects are strings as they are.
-    locations = [LocationToStr(location) for location in locations]
-    teachers = [TeacherToStr(teacher) for teacher in teachers]
-
-    print '$'.join(subjects).encode('utf-8')
-    print '$'.join(locations).encode('utf-8')
-    print '$'.join(teachers).encode('utf-8')
+    PrintValueInfo(value)

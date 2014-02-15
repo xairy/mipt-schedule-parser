@@ -4,13 +4,14 @@ MIPT Schedule parser
 The schedule parser consists of two independent scripts: one for converting
 a schedule xls file into a simple plain text format and the other one is for
 extracting subject's name, professor's name, building and room number from
-a raw description string.
+a raw description string. For convenience there is also a third script that
+does both those things simultaneously.
 
 ### Prerequisites
 
 To run the parser scripts you need python 2.7, python-xlrd, python-regex.
 
-Ubuntu / Linux mint:
+Ubuntu / Linux Mint:
 
     sudo apt-get install python-xlrd
     sudo apt-get install python-regex
@@ -121,3 +122,30 @@ Usage:
     117 ГК$113 ГК
     
     <Ctrl + D>
+
+### Full parser script
+
+This script combines the two previous ones and prints the lists of subjects,
+professors and rooms after each of the 4 lines that describe a class.
+
+Usage:
+
+    $ ./full_parser.py 2014_spring/1.xls
+    ...
+    2       Линейная алгебра / Доцент Чубаров И.А./   202 НК
+    Линейная алгебра
+    202 НК
+    Чубаров И. А.
+    2       Линейная алгебра / Доцент Чубаров И.А./   202 НК
+    Линейная алгебра
+    202 НК
+    Чубаров И. А.
+    2       Линейная алгебра / Доцент Чубаров И.А./   202 НК
+    Линейная алгебра
+    202 НК
+    Чубаров И. А.
+    2       Линейная алгебра / Доцент Чубаров И.А./   202 НК
+    Линейная алгебра
+    202 НК
+    Чубаров И. А.
+    ...
