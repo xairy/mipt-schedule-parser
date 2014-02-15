@@ -1,4 +1,4 @@
-MIPT Schedule parser
+MIPT Schedule Parser
 ====================
 
 The schedule parser consists of two independent scripts: one for converting
@@ -13,8 +13,7 @@ To run the parser scripts you need python 2.7, python-xlrd, python-regex.
 
 Ubuntu / Linux Mint:
 
-    sudo apt-get install python-xlrd
-    sudo apt-get install python-regex
+    sudo apt-get install python-xlrd, python-regex
 
 ### Schedule parser script
 
