@@ -24,7 +24,7 @@ def ParseCell(value):
 
   return ('$'.join(subjects), '$'.join(locations), '$'.join(teachers))
 
-def LoadScheduleToDb(file, conn):
+def LoadScheduleToDb(file, conn, cur):
   schedule = schedule_parser.Schedule()
   schedule.Parse(file)
 
@@ -51,7 +51,7 @@ def LoadScheduleToDb(file, conn):
 
               subjects, locations, teachers = ParseCell(raw_data)
 
-              conn.execute("insert into classes values (" +
+              cur.execute("insert into classes values (" +
                              ":group," +
                              ":subgroup," +
                              ":week_day," +
@@ -81,12 +81,14 @@ if __name__ == '__main__':
 
   path = args[0]
   conn = None
+  cur = None
 
   if args[1] == "sqlite3":
     assert len(args) == 3
 
     import sqlite3
     conn = sqlite3.connect(args[2])
+    cur = conn.cursor()
 
   elif args[1] == "mysql":
     assert len(args) == 6
@@ -97,8 +99,12 @@ if __name__ == '__main__':
       user=args[3],
       passwd=args[4],
       db=args[5])
+    cur = conn.cursor()
 
   else:
     assert False
 
-  LoadScheduleToDb(path, conn)
+  LoadScheduleToDb(path, conn, cur)
+
+  cur.close()
+  conn.close()
