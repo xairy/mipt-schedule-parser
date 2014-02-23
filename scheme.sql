@@ -10,6 +10,6 @@ create table classes(
     locations text,
     teachers text,
 
-    type integer,
+    `type` integer,
     raw_data text
 );
