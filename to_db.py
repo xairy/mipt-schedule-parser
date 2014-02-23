@@ -24,7 +24,7 @@ def ParseCell(value):
 
   return ('$'.join(subjects), '$'.join(locations), '$'.join(teachers))
 
-def LoadScheduleToDb(file, conn, cur):
+def LoadScheduleToDb(file, conn, cur, cb):
   schedule = schedule_parser.Schedule()
   schedule.Parse(file)
 
@@ -51,29 +51,9 @@ def LoadScheduleToDb(file, conn, cur):
 
               subjects, locations, teachers = ParseCell(raw_data)
 
-              cur.execute("insert into classes values (" +
-                             ":group," +
-                             ":subgroup," +
-                             ":week_day," +
-                             ":class_number," +
-                             ":class_half," +
-                             ":subjects," +
-                             ":locations," +
-                             ":teachers," +
-                             ":type," +
-                             ":raw_data)",
-                {"group": group,
-                 "subgroup": subgroup,
-                 "week_day": weekday_index,
-                 "class_number": class_number,
-                 "class_half": class_half,
-                 "subjects": subjects,
-                 "locations": locations,
-                 "teachers": teachers,
-                 "type": class_type,
-                 "raw_data": raw_data})
-
-  conn.commit()
+              cb(cur, (group, subgroup, weekday_index, class_number,
+                 class_half, subjects, locations, teachers,
+                 class_type, raw_data))
 
 if __name__ == '__main__':
   args = sys.argv[1:]
@@ -82,29 +62,90 @@ if __name__ == '__main__':
   path = args[0]
   conn = None
   cur = None
+  add = None
 
   if args[1] == "sqlite3":
     assert len(args) == 3
 
+    def add_sqlite3(cur, args):
+      group, subgroup, weekday_index, class_number,\
+      class_half, subjects, locations, teachers,\
+      class_type, raw_data = args
+
+      cur.execute("insert into classes values (" +
+                     ":group," +
+                     ":subgroup," +
+                     ":week_day," +
+                     ":class_number," +
+                     ":class_half," +
+                     ":subjects," +
+                     ":locations," +
+                     ":teachers," +
+                     ":type," +
+                     ":raw_data)",
+        {"group": group,
+         "subgroup": subgroup,
+         "week_day": weekday_index,
+         "class_number": class_number,
+         "class_half": class_half,
+         "subjects": subjects,
+         "locations": locations,
+         "teachers": teachers,
+         "type": class_type,
+         "raw_data": raw_data})
+
     import sqlite3
     conn = sqlite3.connect(args[2])
     cur = conn.cursor()
+    add = add_sqlite3
 
   elif args[1] == "mysql":
-    assert len(args) == 6
+    assert len(args) == 5
+
+    def add_mysql(cur, args):
+      group, subgroup, weekday_index, class_number,\
+      class_half, subjects, locations, teachers,\
+      class_type, raw_data = args
+
+      cur.execute("insert into classes values (" +
+                     "%(group)s," +
+                     "%(subgroup)s," +
+                     "%(week_day)s," +
+                     "%(class_number)s," +
+                     "%(class_half)s," +
+                     "%(subjects)s," +
+                     "%(locations)s," +
+                     "%(teachers)s," +
+                     "%(type)s," +
+                     "%(raw_data)s)",
+        {"group": group,
+         "subgroup": subgroup,
+         "week_day": weekday_index,
+         "class_number": class_number,
+         "class_half": class_half,
+         "subjects": subjects,
+         "locations": locations,
+         "teachers": teachers,
+         "type": class_type,
+         "raw_data": raw_data})
 
     import MySQLdb
+    import getpass
+    passwd = getpass.getpass()
     conn = MySQLdb.connect(
       host=args[2],
       user=args[3],
-      passwd=args[4],
-      db=args[5])
+      passwd=passwd,
+      db=args[4],
+      charset='utf8')
     cur = conn.cursor()
+    add = add_mysql
 
   else:
     assert False
 
-  LoadScheduleToDb(path, conn, cur)
+  LoadScheduleToDb(path, conn, cur, add)
 
+  conn.commit()
   cur.close()
   conn.close()
