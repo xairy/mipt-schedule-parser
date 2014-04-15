@@ -13,7 +13,7 @@ To run the parser scripts you need python 2.7, python-xlrd, python-regex.
 
 Ubuntu / Linux Mint:
 
-    sudo apt-get install python-xlrd, python-regex
+    sudo apt-get install python-xlrd python-regex
 
 ### Schedule parser script
 
