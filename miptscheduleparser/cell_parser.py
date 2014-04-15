@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 
 import fileinput
 import regex
-import sets
 import string
 import sys
 import unicodedata
