@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #coding: utf-8
 
-from distutils.core import setup
+from setuptools import setup, find_packages
 
 setup(name='MIPT Schedule Parser',
     version='0.1.0',
@@ -20,5 +20,7 @@ setup(name='MIPT Schedule Parser',
     ],
 
     packages=['miptscheduleparser'],
-    package_data={'miptscheduleparser': ['data/subjects', 'data/2013_fall/*', 'data/2014_spring/*']}
+    package_data={'miptscheduleparser': ['data/subjects', 'data/2013_fall/*', 'data/2014_spring/*']},
+
+    test_suite = 'miptscheduleparser.test.suite'
 )
