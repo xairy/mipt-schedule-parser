@@ -10,6 +10,7 @@ import string
 import sys
 import unicodedata
 import xlrd
+import os
 
 __author__ = "Andrey Konovalov"
 __copyright__ = "Copyright (C) 2014 Andrey Konovalov"
@@ -96,7 +97,9 @@ lecture_room_re = regex.compile(
 
 subject_res = []
 subject_names = [[]]
-with open('subjects') as subject_file:
+this_dir, this_filename = os.path.split(__file__)
+subjects_path = os.path.join(this_dir, "data", "subjects")
+with open(subjects_path) as subject_file:
   while True:
     line = subject_file.readline().decode('utf-8')
     if line == '':
