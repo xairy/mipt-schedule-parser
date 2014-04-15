@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 import unittest
 import xlrd
 
-import cell_parser
+import miptscheduleparser.cell_parser as cell_parser
 
 __author__ = "Andrey Konovalov"
 __copyright__ = "Copyright (C) 2014 Andrey Konovalov"
@@ -213,5 +213,13 @@ class SubjectsTest(unittest.TestCase):
     for i in xrange(len(self.cases)):
       self.assertEqual(cell_parser.GetSubjects(self.cases[i][0]), self.cases[i][1])
 
+def suite():
+  loader = unittest.TestLoader()
+  suite = unittest.TestSuite()
+  suite.addTest(LocationsTest())
+  suite.addTest(TeachersTest())
+  suite.addTest(SubjectsTest())
+  return suite
+
 if __name__ == '__main__':
-   unittest.main()
+  unittest.TextTestRunner(verbosity=2).run(suite())

@@ -3,7 +3,6 @@
 
 from __future__ import unicode_literals
 
-import sets
 import sys
 import xlrd
 
@@ -84,7 +83,7 @@ class Schedule:
           weekday_hours_ranges.append((last, row))
           last = row
       weekday_hours_ranges.append((last, weekday_range[1]))
-      self.hours_ranges.append(weekday_hours_ranges) 
+      self.hours_ranges.append(weekday_hours_ranges)
 
   def ParseGroups(self):
     self.groups = []

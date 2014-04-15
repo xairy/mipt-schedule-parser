@@ -1,3 +1,7 @@
 *.pyc
 *.swp
 *.~lock*
+build/
+dist/
+setup.cfg
+*.egg-info

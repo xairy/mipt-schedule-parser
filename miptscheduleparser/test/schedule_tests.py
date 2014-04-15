@@ -3,20 +3,24 @@
 
 from __future__ import unicode_literals
 
+import os
 import unittest
 import xlrd
 
-import schedule_parser
+import miptscheduleparser.schedule_parser as schedule_parser
 
 __author__ = "Andrey Konovalov"
 __copyright__ = "Copyright (C) 2014 Andrey Konovalov"
 __license__ = "MIT"
 __version__ = "0.1"
 
+this_dir, this_filename = os.path.split(__file__)
+SCHEDULE_PATH = os.path.join(this_dir, "..", "data", "2013_fall", "4kurs.xls")
+
 class WeekdayRangeTest(unittest.TestCase):
   def setUp(self):
     self.schedule = schedule_parser.Schedule()
-    self.schedule.Parse('2013_fall/4kurs.xls')
+    self.schedule.Parse(SCHEDULE_PATH)
 
   def runTest(self):
     self.assertEqual(self.schedule.GetWeekdayRange(0), (4, 11))
@@ -29,7 +33,7 @@ class WeekdayRangeTest(unittest.TestCase):
 class DepartmentCountTest(unittest.TestCase):
   def setUp(self):
     self.schedule = schedule_parser.Schedule()
-    self.schedule.Parse('2013_fall/4kurs.xls')
+    self.schedule.Parse(SCHEDULE_PATH)
 
   def runTest(self):
     self.assertEqual(self.schedule.GetDepartmentCount(), 9)
@@ -37,7 +41,7 @@ class DepartmentCountTest(unittest.TestCase):
 class DepartmentRangeTest(unittest.TestCase):
   def setUp(self):
     self.schedule = schedule_parser.Schedule()
-    self.schedule.Parse('2013_fall/4kurs.xls')
+    self.schedule.Parse(SCHEDULE_PATH)
 
   def runTest(self):
     self.assertEqual(self.schedule.GetDepartmentRange(0), (2, 11))
@@ -53,7 +57,7 @@ class DepartmentRangeTest(unittest.TestCase):
 class DepartmentsRowTest(unittest.TestCase):
   def setUp(self):
     self.schedule = schedule_parser.Schedule()
-    self.schedule.Parse('2013_fall/4kurs.xls')
+    self.schedule.Parse(SCHEDULE_PATH)
 
   def runTest(self):
     self.assertEqual(self.schedule.GetDepartmentsRow(), 3)
@@ -61,7 +65,7 @@ class DepartmentsRowTest(unittest.TestCase):
 class HoursColumnTest(unittest.TestCase):
   def setUp(self):
     self.schedule = schedule_parser.Schedule()
-    self.schedule.Parse('2013_fall/4kurs.xls')
+    self.schedule.Parse(SCHEDULE_PATH)
 
   def runTest(self):
     self.assertEqual(self.schedule.GetHoursColumn(), 1)
@@ -69,7 +73,7 @@ class HoursColumnTest(unittest.TestCase):
 class HoursRangesTest(unittest.TestCase):
   def setUp(self):
     self.schedule = schedule_parser.Schedule()
-    self.schedule.Parse('2013_fall/4kurs.xls')
+    self.schedule.Parse(SCHEDULE_PATH)
 
   def runTest(self):
     self.assertEqual(self.schedule.GetHoursRanges(0), [(4, 5), (5, 6), (6, 7), (7, 8), (8, 9), (9, 10), (10, 11)])
@@ -79,7 +83,7 @@ class HoursRangesTest(unittest.TestCase):
 class GroupCountTest(unittest.TestCase):
   def setUp(self):
     self.schedule = schedule_parser.Schedule()
-    self.schedule.Parse('2013_fall/4kurs.xls')
+    self.schedule.Parse(SCHEDULE_PATH)
 
   def runTest(self):
     self.assertEqual(self.schedule.GetGroupCount(0), 9)
@@ -95,7 +99,7 @@ class GroupCountTest(unittest.TestCase):
 class GroupListTest(unittest.TestCase):
   def setUp(self):
     self.schedule = schedule_parser.Schedule()
-    self.schedule.Parse('2013_fall/4kurs.xls')
+    self.schedule.Parse(SCHEDULE_PATH)
 
   def runTest(self):
     self.assertEqual(self.schedule.GetGroupList(0), ['011', '012', '013', '014', '015', '016', '017', '018', '019'])
@@ -107,7 +111,7 @@ class GroupListTest(unittest.TestCase):
 class GroupRangeTest(unittest.TestCase):
   def setUp(self):
     self.schedule = schedule_parser.Schedule()
-    self.schedule.Parse('2013_fall/4kurs.xls')
+    self.schedule.Parse(SCHEDULE_PATH)
 
   def runTest(self):
     self.assertEqual(self.schedule.GetGroupRange(0, 0), (2, 3))
@@ -122,7 +126,7 @@ class GroupRangeTest(unittest.TestCase):
 class WeekdayByRowTest(unittest.TestCase):
   def setUp(self):
     self.schedule = schedule_parser.Schedule()
-    self.schedule.Parse('2013_fall/4kurs.xls')
+    self.schedule.Parse(SCHEDULE_PATH)
 
   def runTest(self):
     self.assertEqual(self.schedule.GetWeekdayByRow(4), 0)
@@ -139,7 +143,7 @@ class WeekdayByRowTest(unittest.TestCase):
 class PairByRowTest(unittest.TestCase):
   def setUp(self):
     self.schedule = schedule_parser.Schedule()
-    self.schedule.Parse('2013_fall/4kurs.xls')
+    self.schedule.Parse(SCHEDULE_PATH)
 
   def runTest(self):
     self.assertEqual(self.schedule.GetPairByRow(4), (0, 0))
@@ -155,7 +159,7 @@ class PairByRowTest(unittest.TestCase):
 class DepartmentByColumnTest(unittest.TestCase):
   def setUp(self):
     self.schedule = schedule_parser.Schedule()
-    self.schedule.Parse('2013_fall/4kurs.xls')
+    self.schedule.Parse(SCHEDULE_PATH)
 
   def runTest(self):
     self.assertEqual(self.schedule.GetDepartmentByColumn(2), 0)
@@ -176,7 +180,7 @@ class DepartmentByColumnTest(unittest.TestCase):
 class GroupByColumnTest(unittest.TestCase):
   def setUp(self):
     self.schedule = schedule_parser.Schedule()
-    self.schedule.Parse('2013_fall/4kurs.xls')
+    self.schedule.Parse(SCHEDULE_PATH)
 
   def runTest(self):
     self.assertEqual(self.schedule.GetGroupByColumn(2), (0, 0))
@@ -189,5 +193,23 @@ class GroupByColumnTest(unittest.TestCase):
     self.assertEqual(self.schedule.GetGroupByColumn(27), (3, 1))
     self.assertEqual(self.schedule.GetGroupByColumn(76), (3, 0))
 
+def suite():
+  loader = unittest.TestLoader()
+  suite = unittest.TestSuite()
+  suite.addTest(WeekdayRangeTest())
+  suite.addTest(DepartmentCountTest())
+  suite.addTest(DepartmentRangeTest())
+  suite.addTest(DepartmentsRowTest())
+  suite.addTest(HoursColumnTest())
+  suite.addTest(HoursRangesTest())
+  suite.addTest(GroupCountTest())
+  suite.addTest(GroupListTest())
+  suite.addTest(GroupRangeTest())
+  suite.addTest(WeekdayByRowTest())
+  suite.addTest(PairByRowTest())
+  suite.addTest(DepartmentByColumnTest())
+  suite.addTest(GroupByColumnTest())
+  return suite
+
 if __name__ == '__main__':
-   unittest.main()
+   unittest.TextTestRunner(verbosity=2).run(suite())
