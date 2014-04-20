@@ -151,15 +151,15 @@ class Schedule:
         return (index, row - hr[0])
     assert False
 
-  def GetDepartmentByColumn(self, column):
+  def GetDepartmentIndexByColumn(self, column):
     for index in xrange(len(self.department_ranges)):
       dr = self.department_ranges[index]
       if dr[0] <= column and column < dr[1]:
         return index
     assert False
 
-  def GetGroupByColumn(self, column):
-    department_index = self.GetDepartmentByColumn(column)
+  def GetGroupIndexByColumn(self, column):
+    department_index = self.GetDepartmentIndexByColumn(column)
     group_ranges = self.group_ranges[department_index]
     for index in xrange(len(group_ranges)):
       gr = group_ranges[index]
@@ -190,7 +190,7 @@ class Schedule:
     wr = self.weekday_ranges[weekday_index]
 
     groups_count = len(self.groups[department_index])
-    pairs_count = 7
+    pairs_count = 7 # FIXME(xairy): make global.
     schedule_table = [[[[('', 0), ('', 0)], [('', 0), ('', 0)]]
       for i in xrange(pairs_count)] for i in xrange(groups_count)]
 
@@ -203,7 +203,7 @@ class Schedule:
         for row in xrange(rb, re):
           for column in xrange(cb, ce):
             p1, p2 = self.GetPairByRow(row)
-            g1, g2 = self.GetGroupByColumn(column)
+            g1, g2 = self.GetGroupIndexByColumn(column)
             schedule_table[g1][p1][g2][p2] = (value, color)
 
             hr = self.hours_ranges[weekday_index][p1]
@@ -224,7 +224,7 @@ class Schedule:
           continue
 
         p1, p2 = self.GetPairByRow(row)
-        g1, g2 = self.GetGroupByColumn(column)
+        g1, g2 = self.GetGroupIndexByColumn(column)
         schedule_table[g1][p1][g2][p2] = (value, color)
 
         hr = self.hours_ranges[weekday_index][p1]
@@ -239,9 +239,58 @@ class Schedule:
 
     return schedule_table
 
+  # Events
+
+  # FIXME(xairy): naive implementation, sometimes doesn't work correctly.
+  def GetGroupsByColumnRange(self, rng):
+    d1 = self.GetDepartmentIndexByColumn(rng[0])
+    d2 = self.GetDepartmentIndexByColumn(rng[1] - 1)
+    assert d1 == d2
+    groups = []
+    for column in xrange(rng[0], rng[1]):
+      g1, g2 = self.GetGroupIndexByColumn(column)
+      group = self.GetGroup(d1, g1)
+      if group not in groups:
+        groups.append(group)
+    return groups
+
+  # FIXME(xairy): naive implementation, sometimes doesn't work correctly.
+  def GetPairRangeByRowRange(self, rng):
+    start = self.GetPairByRow(rng[0])
+    end = self.GetPairByRow(rng[1])
+    return start[0], end[0]
+
+  # FIXME(xairy): naive implementation, sometimes doesn't work correctly.
+  def GetEvents(self, department_index, weekday_index):
+    dr = self.department_ranges[department_index]
+    wr = self.weekday_ranges[weekday_index]
+
+    # event = {'start': ..., 'end': ..., 'groups': [...], 'value': ...}
+    events = []
+
+    for (rb, re, cb, ce) in self.worksheet.merged_cells:
+      if wr[0] <= rb and re <= wr[1] and dr[0] <= cb and ce <= dr[1]:
+        value = self.worksheet.cell_value(rb, cb)
+        color = self.GetCellColor(rb, cb)
+        if value == '':
+          continue
+        events.append({})
+        groups = self.GetGroupsByColumnRange((cb, ce))
+        start, end = self.GetPairRangeByRowRange((rb, re))
+        events[-1]['value'] = value
+        events[-1]['start'] = start
+        events[-1]['end'] = end
+        events[-1]['groups'] = groups
+
+    # TODO(xairy): not merged cells.
+
+    return events
+
 def PrintSchedule(file):
   schedule = Schedule()
   schedule.Parse(file)
+  print schedule.GetEvents(0, 0)
+  return
   for department_index in xrange(schedule.GetDepartmentCount()):
     schedule_tables = []
     for weekday_index in xrange(6):
