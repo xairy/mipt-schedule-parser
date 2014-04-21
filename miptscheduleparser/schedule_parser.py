@@ -257,7 +257,7 @@ class Schedule:
   # FIXME(xairy): naive implementation, sometimes doesn't work correctly.
   def GetPairRangeByRowRange(self, rng):
     start = self.GetPairByRow(rng[0])
-    end = self.GetPairByRow(rng[1])
+    end = self.GetPairByRow(rng[1] - 1)
     return start[0], end[0]
 
   # FIXME(xairy): naive implementation, sometimes doesn't work correctly.
@@ -267,29 +267,52 @@ class Schedule:
 
     # event = {'start': ..., 'end': ..., 'groups': [...], 'value': ...}
     events = []
+    merged_cells = []
 
     for (rb, re, cb, ce) in self.worksheet.merged_cells:
       if wr[0] <= rb and re <= wr[1] and dr[0] <= cb and ce <= dr[1]:
+        merged_cells.append((rb, re, cb, ce))
         value = self.worksheet.cell_value(rb, cb)
-        color = self.GetCellColor(rb, cb)
         if value == '':
           continue
-        events.append({})
+        color = self.GetCellColor(rb, cb)
         groups = self.GetGroupsByColumnRange((cb, ce))
         start, end = self.GetPairRangeByRowRange((rb, re))
+        events.append({})
         events[-1]['value'] = value
         events[-1]['start'] = start
         events[-1]['end'] = end
         events[-1]['groups'] = groups
+        events[-1]['color'] = color
 
-    # TODO(xairy): not merged cells.
+    for row in xrange(wr[0], wr[1]):
+      for column in xrange(dr[0], dr[1]):
+        in_merged = False
+        for (rb, re, cb, ce) in merged_cells:
+          if rb <= row < re and cb <= column < ce:
+            in_merged = True
+            break
+        if in_merged:
+          continue
+        value = self.worksheet.cell_value(row, column)
+        if value == '':
+          continue
+        color = self.GetCellColor(row, column)
+        groups = self.GetGroupsByColumnRange((column, column + 1))
+        start, end = self.GetPairRangeByRowRange((row, row + 1))
+        events.append({})
+        events[-1]['value'] = value
+        events[-1]['start'] = start
+        events[-1]['end'] = end
+        events[-1]['groups'] = groups
+        events[-1]['color'] = color
 
     return events
 
 def PrintSchedule(file):
   schedule = Schedule()
   schedule.Parse(file)
-  print schedule.GetEvents(0, 0)
+  print schedule.GetEvents(0, 1)
   return
   for department_index in xrange(schedule.GetDepartmentCount()):
     schedule_tables = []
