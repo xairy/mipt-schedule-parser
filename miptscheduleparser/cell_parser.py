@@ -148,7 +148,7 @@ def GetTeachers(value):
       teacher_entries.append((start, (surname, first_initial, second_initial)))
     value = value[:start] + ('$' * len(teacher)) + value[end:]
   m = second_teacher_re.search(value)
-  if m != None:
+  if m != None and not(m.partial):
     teacher = m.group('teacher')
     surname = m.group('surname')
     start = m.start('teacher')
