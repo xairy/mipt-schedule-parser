@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#coding: utf-8
+# -*- coding: utf-8 -*-
 
 from setuptools import setup, find_packages
 
@@ -11,7 +11,7 @@ setup(name='MIPT Schedule Parser',
     author_email='adech.fo@gmail.com',
     url='https://github.com/xairy/mipt-schedule-parser',
 
-    license='LICENSE',
+    license='MIT license, see LICENSE',
     long_description=open('README.md').read(),
 
     install_requires=[
@@ -19,8 +19,10 @@ setup(name='MIPT Schedule Parser',
         "regex >= 0.1.0",
     ],
 
-    packages=['miptscheduleparser'],
-    package_data={'miptscheduleparser': ['data/subjects', 'data/2013_fall/*', 'data/2014_spring/*']},
+    packages=find_packages(),
+    include_package_data=True,
 
-    test_suite = 'miptscheduleparser.test.suite'
+    test_suite = 'miptscheduleparser.test.suite',
+
+    zip_safe=False
 )
