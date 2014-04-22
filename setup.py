@@ -20,9 +20,8 @@ setup(name='mipt-schedule-parser',
     ],
 
     packages=find_packages(),
+    package_data={'miptscheduleparser': ['data/subjects', 'data/2013_fall/*', 'data/2014_spring/*']},
     include_package_data=True,
 
-    test_suite = 'miptscheduleparser.test.suite',
-
-    zip_safe=False
+    test_suite = 'miptscheduleparser.test.suite'
 )
