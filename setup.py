@@ -3,7 +3,7 @@
 
 from setuptools import setup, find_packages
 
-setup(name='MIPT Schedule Parser',
+setup(name='mipt-schedule-parser',
     version='0.1.0',
     description='Parses standard mipt schedule xls file.',
 
