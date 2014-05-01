@@ -23,6 +23,8 @@ SATURDAY = 'Суббота'
 
 WEEKDAYS = [MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY]
 
+PAIRS_PER_DAY = 7
+
 class Schedule:
   def __init__(self):
     pass
@@ -190,9 +192,8 @@ class Schedule:
     wr = self.weekday_ranges[weekday_index]
 
     groups_count = len(self.groups[department_index])
-    pairs_count = 7 # FIXME(xairy): make global.
     schedule_table = [[[[('', 0), ('', 0)], [('', 0), ('', 0)]]
-      for i in xrange(pairs_count)] for i in xrange(groups_count)]
+      for i in xrange(PAIRS_PER_DAY)] for i in xrange(groups_count)]
 
     for (rb, re, cb, ce) in self.worksheet.merged_cells:
       if wr[0] <= rb and re <= wr[1] and dr[0] <= cb and ce <= dr[1]:
@@ -241,7 +242,7 @@ class Schedule:
 
   # Events
 
-  # FIXME(xairy): naive implementation, sometimes doesn't work correctly.
+  # XXX(xairy): returns list of groups, not subgroups.
   def GetGroupsByColumnRange(self, rng):
     d1 = self.GetDepartmentIndexByColumn(rng[0])
     d2 = self.GetDepartmentIndexByColumn(rng[1] - 1)
@@ -273,6 +274,7 @@ class Schedule:
       if wr[0] <= rb and re <= wr[1] and dr[0] <= cb and ce <= dr[1]:
         merged_cells.append((rb, re, cb, ce))
         value = self.worksheet.cell_value(rb, cb)
+
         if value == '':
           continue
         color = self.GetCellColor(rb, cb)
@@ -295,6 +297,7 @@ class Schedule:
         if in_merged:
           continue
         value = self.worksheet.cell_value(row, column)
+
         if value == '':
           continue
         color = self.GetCellColor(row, column)
@@ -309,11 +312,16 @@ class Schedule:
 
     return events
 
+def PrintEvents(file):
+  schedule = Schedule()
+  schedule.Parse(file)
+  events = schedule.GetEvents(7, 0)
+  for event in events:
+    print event['start'], event['end'], event['groups'], event['value']
+
 def PrintSchedule(file):
   schedule = Schedule()
   schedule.Parse(file)
-  print schedule.GetEvents(0, 1)
-  return
   for department_index in xrange(schedule.GetDepartmentCount()):
     schedule_tables = []
     for weekday_index in xrange(6):
