@@ -23,6 +23,8 @@ SATURDAY = 'Суббота'
 
 WEEKDAYS = [MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY]
 
+PAIRS_PER_DAY = 7
+
 class Schedule:
   def __init__(self):
     pass
@@ -151,15 +153,15 @@ class Schedule:
         return (index, row - hr[0])
     assert False
 
-  def GetDepartmentByColumn(self, column):
+  def GetDepartmentIndexByColumn(self, column):
     for index in xrange(len(self.department_ranges)):
       dr = self.department_ranges[index]
       if dr[0] <= column and column < dr[1]:
         return index
     assert False
 
-  def GetGroupByColumn(self, column):
-    department_index = self.GetDepartmentByColumn(column)
+  def GetGroupIndexByColumn(self, column):
+    department_index = self.GetDepartmentIndexByColumn(column)
     group_ranges = self.group_ranges[department_index]
     for index in xrange(len(group_ranges)):
       gr = group_ranges[index]
@@ -190,9 +192,8 @@ class Schedule:
     wr = self.weekday_ranges[weekday_index]
 
     groups_count = len(self.groups[department_index])
-    pairs_count = 7
     schedule_table = [[[[('', 0), ('', 0)], [('', 0), ('', 0)]]
-      for i in xrange(pairs_count)] for i in xrange(groups_count)]
+      for i in xrange(PAIRS_PER_DAY)] for i in xrange(groups_count)]
 
     for (rb, re, cb, ce) in self.worksheet.merged_cells:
       if wr[0] <= rb and re <= wr[1] and dr[0] <= cb and ce <= dr[1]:
@@ -203,7 +204,7 @@ class Schedule:
         for row in xrange(rb, re):
           for column in xrange(cb, ce):
             p1, p2 = self.GetPairByRow(row)
-            g1, g2 = self.GetGroupByColumn(column)
+            g1, g2 = self.GetGroupIndexByColumn(column)
             schedule_table[g1][p1][g2][p2] = (value, color)
 
             hr = self.hours_ranges[weekday_index][p1]
@@ -224,7 +225,7 @@ class Schedule:
           continue
 
         p1, p2 = self.GetPairByRow(row)
-        g1, g2 = self.GetGroupByColumn(column)
+        g1, g2 = self.GetGroupIndexByColumn(column)
         schedule_table[g1][p1][g2][p2] = (value, color)
 
         hr = self.hours_ranges[weekday_index][p1]
@@ -238,6 +239,85 @@ class Schedule:
           schedule_table[g1][p1][1][1] = (value, color)
 
     return schedule_table
+
+  # Events
+
+  # XXX(xairy): returns list of groups, not subgroups.
+  def GetGroupsByColumnRange(self, rng):
+    d1 = self.GetDepartmentIndexByColumn(rng[0])
+    d2 = self.GetDepartmentIndexByColumn(rng[1] - 1)
+    assert d1 == d2
+    groups = []
+    for column in xrange(rng[0], rng[1]):
+      g1, g2 = self.GetGroupIndexByColumn(column)
+      group = self.GetGroup(d1, g1)
+      if group not in groups:
+        groups.append(group)
+    return groups
+
+  # FIXME(xairy): naive implementation, sometimes doesn't work correctly.
+  def GetPairRangeByRowRange(self, rng):
+    start = self.GetPairByRow(rng[0])
+    end = self.GetPairByRow(rng[1] - 1)
+    return start[0], end[0]
+
+  # FIXME(xairy): naive implementation, sometimes doesn't work correctly.
+  def GetEvents(self, department_index, weekday_index):
+    dr = self.department_ranges[department_index]
+    wr = self.weekday_ranges[weekday_index]
+
+    # event = {'start': ..., 'end': ..., 'groups': [...], 'value': ...}
+    events = []
+    merged_cells = []
+
+    for (rb, re, cb, ce) in self.worksheet.merged_cells:
+      if wr[0] <= rb and re <= wr[1] and dr[0] <= cb and ce <= dr[1]:
+        merged_cells.append((rb, re, cb, ce))
+        value = self.worksheet.cell_value(rb, cb)
+
+        if value == '':
+          continue
+        color = self.GetCellColor(rb, cb)
+        groups = self.GetGroupsByColumnRange((cb, ce))
+        start, end = self.GetPairRangeByRowRange((rb, re))
+        events.append({})
+        events[-1]['value'] = value
+        events[-1]['start'] = start
+        events[-1]['end'] = end
+        events[-1]['groups'] = groups
+        events[-1]['color'] = color
+
+    for row in xrange(wr[0], wr[1]):
+      for column in xrange(dr[0], dr[1]):
+        in_merged = False
+        for (rb, re, cb, ce) in merged_cells:
+          if rb <= row < re and cb <= column < ce:
+            in_merged = True
+            break
+        if in_merged:
+          continue
+        value = self.worksheet.cell_value(row, column)
+
+        if value == '':
+          continue
+        color = self.GetCellColor(row, column)
+        groups = self.GetGroupsByColumnRange((column, column + 1))
+        start, end = self.GetPairRangeByRowRange((row, row + 1))
+        events.append({})
+        events[-1]['value'] = value
+        events[-1]['start'] = start
+        events[-1]['end'] = end
+        events[-1]['groups'] = groups
+        events[-1]['color'] = color
+
+    return events
+
+def PrintEvents(file):
+  schedule = Schedule()
+  schedule.Parse(file)
+  events = schedule.GetEvents(7, 0)
+  for event in events:
+    print event['start'], event['end'], event['groups'], event['value']
 
 def PrintSchedule(file):
   schedule = Schedule()
