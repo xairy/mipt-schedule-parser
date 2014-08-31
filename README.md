@@ -106,9 +106,9 @@ Usage:
 The script works in a manner similar to addr2line.
 For each line read from the input it will print 3 lines:
 
-    $-separated list of all the subjects extracted
-    $-separated list of all the professors' names extracted
-    $-separated list of all the buldings and room numbers extracted
+    tab-separated list of all the subjects extracted
+    tab-separated list of all the professors' names extracted
+    tab-separated list of all the buldings and room numbers extracted
 
 If you are running this script manually you may want to press Ctrl + D to flush
 the input you entered so far.
@@ -123,8 +123,8 @@ Usage:
     Григорьев А. А.
     Альтерн. курсы 1 из 4-х: 1 Физика низкотемпературной плазмы 117 ГК 2. Биофизика 113 ГК
     <Ctrl + D>
-    Физика низкотемпературной плазмы$Биофизика
-    117 ГК$113 ГК
+    Физика низкотемпературной плазмы  Биофизика
+    117 ГК  113 ГК
     
     <Ctrl + D>
 

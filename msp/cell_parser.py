@@ -243,9 +243,9 @@ def PrintValueInfo(value):
   locations = [LocationToStr(location) for location in locations]
   teachers = [TeacherToStr(teacher) for teacher in teachers]
 
-  print '$'.join(subjects).encode('utf-8')
-  print '$'.join(locations).encode('utf-8')
-  print '$'.join(teachers).encode('utf-8')
+  print '\t'.join(subjects).encode('utf-8')
+  print '\t'.join(locations).encode('utf-8')
+  print '\t'.join(teachers).encode('utf-8')
 
 if __name__ == '__main__':
   for value in fileinput.input():
