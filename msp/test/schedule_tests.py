@@ -7,7 +7,7 @@ import os
 import unittest
 import xlrd
 
-import miptscheduleparser.schedule_parser as schedule_parser
+import msp.schedule_parser as schedule_parser
 
 __author__ = "Andrey Konovalov"
 __copyright__ = "Copyright (C) 2014 Andrey Konovalov"

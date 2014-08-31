@@ -61,6 +61,12 @@ az = ['Акт. Зал'] + DotCapitalJoin(['акт', 'зал'])
 cz = ['Чит. Зал'] + DotCapitalJoin(['чит', 'зал'])
 lecture_rooms = bh + bf + gf + az + cz
 
+def DotEscape(list):
+    result = []
+    for elem in list:
+        result.append(elem.replace('.', '\.'))
+    return result
+
 first_teacher_re = regex.compile(
   '(?P<teacher>' + \
     '(?P<surname>[А-ЯЁ][а-яё]+(?:\-[А-ЯЁ][а-яё]+)?)' + ' ' + \
@@ -89,7 +95,7 @@ building_room_re = regex.compile(
 
 lecture_room_re = regex.compile(
   '(?P<location>' + \
-    '(?P<room>' + '|'.join(lecture_rooms) + ')' + \
+    '(?P<room>' + '|'.join(DotEscape(lecture_rooms)) + ')' + \
   ')' + \
   '(?:[^а-яА-ЯёЁ]|$)'
 )
@@ -153,7 +159,7 @@ def GetTeachers(value):
     surname = m.group('surname')
     start = m.start('teacher')
     end = m.end('teacher')
-    if len(surname) >= 3:
+    if len(surname) >= 4:
       teacher_entries.append((start, (surname, None, None)))
     value = value[:start] + ('$' * len(teacher)) + value[end:]
   teacher_entries.sort()
@@ -230,7 +236,7 @@ def LocationToStr(location):
 
 def PrintValueInfo(value):
   subjects = GetSubjects(value)
-  locations = GetLocations(value)
+  locations= GetLocations(value)
   teachers = GetTeachers(value)
 
   # Subjects are strings as they are.

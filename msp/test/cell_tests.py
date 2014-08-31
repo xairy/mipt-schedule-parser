@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 import unittest
 import xlrd
 
-import miptscheduleparser.cell_parser as cell_parser
+import msp.cell_parser as cell_parser
 
 __author__ = "Andrey Konovalov"
 __copyright__ = "Copyright (C) 2014 Andrey Konovalov"
@@ -69,6 +69,9 @@ class LocationsTest(unittest.TestCase):
       ), ( \
         'Теор. физика 511 Гк', \
         [('511', 'ГК')] \
+      ), ( \
+        'Общая химия /К.х.н., Доцент Снигирева Е.М. /Б.Хим/', \
+        [('Б. Хим.', None)] \
       ), ( \
         '', \
         [] \
@@ -138,10 +141,14 @@ class TeachersTest(unittest.TestCase):
         ' - для "мф"-обязательно, для "кт" и "эк" -а.к.-1', \
         [('Тер-Крикоров', 'А', 'М')] \
       ), ( \
+        'Общая химия /К.х.н., Доцент Снигирева Е.М. /Б.Хим/', \
+        [('Снигирева', 'Е', 'М')] \
+      ), ( \
         '', \
         [] \
       ) \
     ]
+
   def runTest(self):
     for i in xrange(len(self.cases)):
       self.assertEqual(cell_parser.GetTeachers(self.cases[i][0]), self.cases[i][1])
